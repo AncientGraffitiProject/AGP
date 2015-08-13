@@ -1,0 +1,16 @@
+ - map the properties to the property types -- clarify/verify the mappings
+  - update the database with drawing tags
+   -- modify search to use the type of drawing tag?
+   -- update what is printed out
+ - update the drawing tag mappings in the DB
+ 
+ 
+ - extract the properties from the DB for the drop down menu
+ - change the search to use the property ids rather than searching the findspot
+
+--> searching multiple property/types? drawing tags?
+
+ - clean up the DB -- get rid of property info from the agp_inscription_annotations
+ 
+ 
+ - set up caching
