@@ -7,15 +7,14 @@
 		href="#" alt="I.8.2" />
 	<area shape="poly" coords="128,142,151,188,184,170,161,124" href="#"
 		alt="I.8.3" />
-	<area shape="poly" coords="159,124,191,174,224,155,196,105" href="#"
-		alt="I.8.4" />
+	<!-- <area shape="poly" coords="159,124,191,174,224,155,196,105" href="#" 
+		alt="I.8.4" /> -->
 	<area shape="poly"
 		coords="196,104,226,152,192,172,348,453,411,417,439,455,492,426,385,234,372,240,332,175,344,163,313,110,247,142,217,93"
 		href="#" alt="I.8.5" />
-	<area shape="poly" coords="220,89,246,145,296,125,268,73,218,89"
-		href="#" alt="I.8.6" />
-	<area shape="poly" coords="266,67,292,125,337,99,309,45" href="#"
-		alt="I.8.7" />
+	<!-- <area shape="poly" coords="220,89,246,145,296,125,268,73,218,89" href="#" 
+		alt="I.8.6" /> <area shape="poly" coords="266,67,292,125,337,99,309,45" href="#" 
+		alt="I.8.7" /> -->
 	<area shape="poly" coords="0" href="#" alt="I.8.8" />
 	<area shape="poly"
 		coords="305,45,337,97,318,110,346,159,335,172,370,237,384,234,427,303,466,376,567,318,386,3"
@@ -23,9 +22,8 @@
 	<area shape="poly"
 		coords="567,320,468,378,492,423,445,455,502,554,661,470,567,320" href="#"
 		alt="I.8.10" />
-	<area shape="poly" coords="0" href="#" alt="I.8.11" />
-	<area shape="poly" coords="749,627,627,717,693,818,814,736,749,623"
-		href="#" alt="I.8.12" />
+	<!-- <area shape="poly" coords="0" href="#" alt="I.8.11" /> <area shape="poly" 
+		coords="749,627,627,717,693,818,814,736,749,623" href="#" alt="I.8.12" /> -->
 	<area shape="poly" coords="818,740,680,828,771,970,906,892" href="#"
 		alt="I.8.13" />
 	<area shape="poly"
@@ -40,8 +38,7 @@
 		href="#" alt="I.8.17" />
 	<area shape="poly" coords="363,756,554,648,479,526,290,630" href="#"
 		alt="I.8.18" />
-	<area shape="poly"
-		coords="290,629,481,526,415,419,346,455,273,327,252,341,234,324,142,369"
-		href="#" alt="I.8.19" />
+	<!-- <area shape="poly" coords="290,629,481,526,415,419,346,455,273,327,252,341,234,324,142,369" 
+		href="#" alt="I.8.19" /> -->
 
 </map>
