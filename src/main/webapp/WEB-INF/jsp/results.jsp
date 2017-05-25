@@ -2,7 +2,6 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ page import="java.util.*"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,13 +10,13 @@
 <title>Ancient Graffiti Project :: Search Results</title>
 <script type="text/javascript"
 	src="<c:url value="/resources/js/jquery.imagemapster-1.2.js" />"></script>
+<script type="text/javascript"
+	src="<c:url value="/resources/js/filterSearch.js"/>"></script>
 <script type="text/javascript">
-var mapName = "Pompeii"; 
-function start()
-{
+
+function start() {
 $('img').mapster({
 	areas: [
-	        
 		<c:forEach var="locKey" items="${requestScope.findLocationKeys}">
 		{
 			key: '${locKey}',
@@ -32,116 +31,127 @@ $('img').mapster({
 }); 
 }
 
-var mapName2 = "I.8"; 
-function start2()
-{
-$('img').mapster({
-	areas: [
-	        
-		<c:forEach var="locKey" items="${requestScope.findLocationKeys}">
-		{
-			key: '${locKey}',
-			fillColor: '0000FF',
-			staticState: true
-		},
-		</c:forEach>
-	], 
-	isSelectable: false,
-	mapKey: 'data-key',
-	clickNavigate: false,		
-	}); 
-}
-
-function generateHeaderMap(name) {
+function generatePompeii(name) {
 	xmlHttp = new XMLHttpRequest();
 	xmlHttp.open("GET",
-			"map?clickedRegion="+name, false);
+			"map?clickedRegion="+name+"&city="+name, false); 
 	xmlHttp.send(null);
-	document.getElementById("headerMap").innerHTML = xmlHttp.responseText;
-	mapName = name;
+	document.getElementById("pompeiiCityMap").innerHTML = xmlHttp.responseText;
 	start();
 }
 
-function generateSidebarMap(name2)
-{
+function generateHerculaneum(name) {
 	xmlHttp = new XMLHttpRequest();
 	xmlHttp.open("GET",
-			"map?clickedRegion="+name2+"&second=yes", false);
+			"map?clickedRegion="+name+"&second=yes"+"&city="+name, false); 
 	xmlHttp.send(null);
-	document.getElementById("sidebarMap").innerHTML = xmlHttp.responseText;
-	start2();
+	document.getElementById("herculaneumCityMap").innerHTML = xmlHttp.responseText;
+	start();
+}
+
+function selectImg(ind, k, shortId, longId){
+	if (ind == 0){
+		document.getElementById("imgLink"+k).href = "http://www.edr-edr.it/edr_programmi/view_img.php?id_nr=" + longId;
+		document.getElementById("imgSrc"+k).src = "http://www.edr-edr.it/foto_epigrafi/thumbnails/" + shortId + "/th_" + longId +".jpg";
+	}
+	else {
+		document.getElementById("imgLink"+k).href = "http://www.edr-edr.it/edr_programmi/view_img.php?id_nr=" + longId + "-" + ind;
+		document.getElementById("imgSrc"+k).src = "http://www.edr-edr.it/foto_epigrafi/thumbnails/" + shortId + "/th_" + longId + "-" + ind + ".jpg";	
+	}
+}
+
+function selectImg2(ind, k, page, thumbnail){
+	document.getElementById("imgLink"+k).href = page;
+	document.getElementById("imgSrc"+k).src = thumbnail;
+}
+
+function checkAlreadyClicked(ids){
+	idList = ids.split(";");
+	for (var i = 0; i < idList.length-1; i++){
+		$("#"+idList[i]).click();
+	}
+}
+
+function updatePage(){
+	if ("${sessionScope.requestURL}" != ""){
+		requestUrl = "${sessionScope.requestURL}";
+		var params = requestUrl.split("?")[1].split("&");
+		for (var i in params){
+			if (params[i] != "query_all=false"){
+				parseParam(params[i]);
+			}
+		}
+		refine=true;
+	}
+	else {
+		// used for ways we can arrive at the results page that are not through filtering.
+		// Arrive here from the search by map and browse drawings pages
+		// --> could be from the links for a specific location or for a drawing category. 
+		refine = false;
+		checkAlreadyClicked('${requestScope.checkboxIds}');
+		refine = true;
+	}
+	<c:if test="${requestScope.returnFromEDR} not empty">
+	document.getElementById("${requestScope.returnFromEDR}").scrollIntoView();
+	</c:if>
 }
 </script>
+<style>
+th {
+	vertical-align: top;
+	width: 185px;
+}
+
+.main-table {
+	max-width: 475px;
+	min-width: 375px;
+}
+
+hr.main-table {
+	margin-left: 0px;
+}
+
+.scroll_top {
+	float: right;
+	position: fixed;
+	color: white;
+	cursor: pointer;
+	align: right;
+	display: inline;
+	margin: 225px 0px 0px 560px;
+}
+
+.map-override1 {
+	position: static
+}
+</style>
 </head>
-<body>
+<body onload="updatePage();">
 
-	<%@include file="results_header.jsp"%>
+	<%@include file="header.jsp"%>
 
-	<div class="container">
-		<div id="sidebarMap"></div>
-		<p>
-			<c:out value="${fn:length(requestScope.resultsLyst)} results found" />
-			<c:out value="${searchQueryDesc}" />
-		</p>
+	<div id="contain" class="container" style="margin-bottom: 50px;">
 
-		<c:forEach var="k" begin="${1}"
-			end="${fn:length(requestScope.resultsLyst)}">
-			<c:set var="i" value="${requestScope.resultsLyst[k-1]}" />
-			<h4>
-				<c:out value="Result ${k}" />
-			</h4>
-			<ul>
-				<li><span class="prop">City:</span> <a
-					href="http://pleiades.stoa.org/places/${i.pleidesID}">${i.ancientCity}</a></li>
-				<li><span class="prop">Findspot:</span> ${i.findSpot}</li>
-				<li><span class="prop">CIL:</span> ${i.bibliography}</li>
-				<c:choose>
-					<c:when test="${not empty i.contentWithLineBreaks}">
-						<li><span class="prop">Content:</span><br />
-							${i.contentWithLineBreaks}</li>
-					</c:when>
-				</c:choose>
-				<li><span class="prop">For more information, see EAGLE
-						ID: </span> <a
-					href="http://www.edr-edr.it/edr_programmi/visualizza.php?id_nr=${i.eagleId}">#${i.eagleId}</a></li>
-				<c:if test="${i.getDrawingTags().size() > 0}">
-					<c:choose>
-						<c:when test="${not empty i.url}">
-							<li><a target="_blank" href="http://www.edr-edr.it/edr_programmi/view_img.php?id_nr=${i.eagleId.substring(3)}"><img class="thumbnail"
-									src="http://www.edr-edr.it/foto_epigrafi/thumbnails/${fn:substring(i.eagleId, 3, 6)}/th_${i.eagleId.substring(3)}.jpg" /></a></li>
+		<%@include file="sidebarSearchMenu.jsp"%>
+		<!--  SideBar Map  -->
+		<div class="map-override1">
+			<div id="pompeiiCityMap"></div>
+			<div id="herculaneumCityMap"></div>
+		</div>
 
-						</c:when>
-						<c:otherwise>
-							<li><img class="thumbnail"
-								src="<c:url value="/resources/images/NoImg.gif" />" width=100
-								height=auto></li>
-						</c:otherwise>
-					</c:choose>
-					<li><span class="prop">Drawing Tag Name(s):</span> <c:forEach
-							var="dt" items="${i.getDrawingTags()}" varStatus="loopStatus">
-							<a href="results?drawing=${dt.id}"><c:out value="${dt.name}"/></a>
-							<c:if test="${!loopStatus.last}">, </c:if>
-						</c:forEach></li>
-					<!-- 
-					<li><span class="prop">Drawing Tag Description(s):</span> <c:forEach
-							var="dt" items="${i.getDrawingTags()}">
-							<c:out value="${dt.description}"></c:out>
-							<c:if test="${!loopStatus.last}">, </c:if>
-						</c:forEach></li> -->
-					<li><span class="prop">Drawing Description:</span>
-						${i.getAgp().getDescription()}</li>
-				</c:if>
-				<!--  <li><span class="prop">Click for Editing: </span> <a
-					href="updateTest?EDR=${i.eagleId}">EDIT</a></li>-->
-			</ul>
-		</c:forEach>
+		<div style="margin-left: 200px;">
+			<div style="width: 100%; float: left; padding-bottom: 10px;">
+				<div id="searchTerms" style="width: 475px"></div>
+			</div>
+			<div id="search-results">
+				<%@include file="filter.jsp"%>
+			</div>
+		</div>
 	</div>
 
 	<script type="text/javascript">
-		generateHeaderMap("Pompeii");
-		generateSidebarMap("I.8");
+			generateHerculaneum("Herculaneum");
+			generatePompeii("Pompeii");
 	</script>
-
-
 </body>
 </html>

@@ -2,55 +2,92 @@
 <html>
 <head>
 <meta charset="UTF-8">
+
 <link rel="stylesheet" type="text/css"
-	href="<c:url value="/resources/css/proj.css" />" />
+	href='<c:url value="/resources/css/proj.css" />' />
 <title>Login Page</title>
-<style>
-.errorblock {
-	color: #ff0000;
-	background-color: #ffEEEE;
-	border: 3px solid #ff0000;
-	padding: 8px;
-	margin: 16px;
+<%@include file="/resources/common_head.txt"%>
+
+<style type="text/css">
+.form-login {
+	background-color: #EEE;
+	padding-top: 10px;
+	padding-bottom: 20px;
+	padding-left: 10px;
+	padding-right: 10px;
+	border-radius: 15px;
+	border-color: #ddd;
+	border-width: 5px;
+	box-shadow: 0 1px 0 #ccc;
+	padding-bottom: 20px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+h4 {
+	border: 0 solid #fff;
+	border-bottom-width: 1px;
+	padding-bottom: 10px;
+	text-align: center;
+}
+
+.form-control {
+	border-radius: 10px;
+}
+
+.wrapper {
+	text-align: center;
+}
+
+.login_container {
+	padding-right: 2cm;
 }
 </style>
 </head>
-<body onload='document.f.j_username.focus();'>
-		<%@include file="header.jsp"%>
-	<h3>Login with Username and Password (Custom Page)</h3>
- 
-	<c:if test="${not empty error}">
-		<div class="errorblock">
-			Your login attempt was not successful, try again.<br /> Caused :
-			${sessionScope["SPRING_SECURITY_LAST_EXCEPTION"].message}
-		</div>
-	</c:if>
- 
-	<form name='f' action="<c:url value='j_spring_security_check' />"
-		method='POST'>
- 
-		<table>
-			<tr>
-				<td>User:</td>
-				<td><input type='text' name='j_username' value=''>
-				</td>
-			</tr>
-			<tr>
-				<td>Password:</td>
-				<td><input type='password' name='j_password' />
-				</td>
-			</tr>
-			<tr>
-				<td colspan='2'><input name="submit" type="submit"
-					value="submit" />
-				</td>
-			</tr>
-			<tr>
-				<td colspan='2'><input name="reset" type="reset" />
-				</td>
-			</tr>
-		</table>
- 
-	</form>
+
+
+<body>
+	<%@include file="/WEB-INF/jsp/header.jsp"%>
+	<div class="container">
+		<form name='login' method='POST' action="<%=request.getContextPath() %>/LoginValidator">
+			<div id="error_msg">
+				<%
+					String error_msg = "";
+					if (request.getAttribute("error_msg") != null) {
+						error_msg = (String) request.getAttribute("error_msg");
+				%>
+
+				<div class="alert alert-danger" role="alert">
+					<%=error_msg%>
+				</div>
+
+				<%
+					}
+				%>
+			</div>
+
+			<div class="login_container">
+				<div class="row">
+					<div class="col-md-offset-5 col-md-3">
+						<div class="form-login">
+							<h4>Login</h4>
+							<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" class="form-control" />
+							 <input type="text" id="userName"
+								name="username" class="form-control input-sm chat-input"
+								placeholder="username" /> <br /> <input type="password"
+								id="userPassword" name="password"
+								class="form-control input-sm chat-input" placeholder="password" />
+							<br />
+							<div class="wrapper">
+								<span class="group-btn"> <input type="submit"
+									class="btn btn-primary" value="Login">
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
 </body>
 </html>

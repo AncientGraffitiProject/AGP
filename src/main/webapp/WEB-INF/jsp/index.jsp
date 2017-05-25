@@ -8,47 +8,83 @@
 <head>
 <meta charset="UTF-8">
 <title>Ancient Graffiti Project</title>
-<%@include file="../../resources/common_head.txt" %>
+<%@include file="../../resources/common_head.txt"%>
+
+<style>
+.fluid-img {
+	margin-right: auto;
+	margin-left: auto;
+	max-height: 325px;
+	max-width: 100%;
+	width: auto;
+	border: 3px solid black;
+}
+
+.leftcol {
+	float: left;
+	width: 50%;
+	margin-bottom: 25px;
+}
+
+.rightcol {
+	float: right;
+	width: 50%;
+	margin-bottom: 25px;
+}
+
+h3 {
+	text-align: center;
+}
+
+@media only screen and (max-width: 1023px) {
+	[class*="col"] {
+		width: 100%;
+	}
+}
+</style>
+
 </head>
 <body>
 	<%@include file="header.jsp"%>
 	<div class="container">
-	<p>Welcome to The Ancient Graffiti Project, a website that provides
-		a search engine for locating and studying graffiti of the early Roman
-		empire from the cities of Pompeii and Herculaneum.</p>
-	<p>Ancient graffiti, inscriptions that have been incised or
-		scratched into wall-plaster, comprise a special branch of epigraphy.
-		They differ from inscriptions on stone in several respects. An
-		inscription on stone may be commemorative, dedicatory, sacred (to name
-		just a few classes of inscription), but in almost all cases
-		forethought has gone into the preparation of the text and the
-		inscribed monument. Graffiti, by contrast, are more often the result
-		of spontaneous composition and are the handwritten creation of the
-		"man on the street." Since graffiti are scratched into friable
-		wall-plaster, they are more easily perishable, but when they do
-		survive they are almost always found in-situ, unlike many stone
-		inscriptions that have survived to the present day through re-use.</p>
-	<p>This website provides a search engine that allows three
-		different types of searches.</p>
-	<ul>
-		<li>You can search for graffiti by location, selecting either the
-			pull-down menu, or by clicking on the map, and</li>
-		<li>You can search specifically for graffiti drawings by choosing
-			the class of drawing that interests you, and</li>
-		<li>You can search for a specific word or phrase and find where
-			it occurs within the ancient city.</li>
-	</ul>
-	<p>At present, the search engine and database are under
-		construction, so searches are limited to Regio I, insula 8 in the city
-		of Pompeii. More will be available as the project progresses.</p>
+		<%--Check for error message informing user of invalid city name or inscription id --%>
+		<c:if test="${not empty requestScope.error}">
+			<p style="color: red;">${requestScope.error}
+			<p />
+		</c:if>
+		<p style="font-size: 16px; text-align: center;">Welcome to The
+			Ancient Graffiti Project, a digital resource for locating and
+			studying graffiti of the early Roman empire from the cities of
+			Pompeii and Herculaneum. More than 500 ancient graffiti are now
+			available here, ca. 300 from Herculaneum and another 200 from Pompeii
+			(from the Lupanar, Insula I.8, and other locations). Entries for the
+			Herculaneum graffiti now include photographs from our fieldwork in
+			2016.</p>
+	</div>
+	<!-- <h2 style="text-align:center;">Click on a map to search</h2> -->
+	<div style="max-width: 1100px; float: center; margin: auto;">
+		<div class="leftcol">
+			<h3>Herculaneum</h3>
+			<a href="search?city=Herculaneum"><img class="fluid-img"
+				src="<%=request.getContextPath()%>/resources/images/Herculaneum.jpg"
+				onmouseover="this.src='<%=request.getContextPath()%>/resources/images/exploreHerculaneum.jpg'"
+				onmouseout="this.src='<%=request.getContextPath()%>/resources/images/Herculaneum.jpg'" /></a>
+		</div>
 
-	<p>
+		<div class="rightcol">
+			<h3>Pompeii</h3>
+			<a href="search?city=Pompeii"><img class="fluid-img"
+				src="<%=request.getContextPath()%>/resources/images/Pompeii.jpg"
+				onmouseover="this.src='<%=request.getContextPath()%>/resources/images/explorePompeii.jpg'"
+				onmouseout="this.src='<%=request.getContextPath()%>/resources/images/Pompeii.jpg'" /></a>
+		</div>
+	</div>
+	<p style="text-align: center;">
 		Special acknowledgements to <a
 			href="http://digitalhumanities.umass.edu/pbmp/">Eric Poehler</a> for
 		the map of Pompeii and the creators of <a
-			href="http://www.outsharked.com/imagemapster/">imagemapster</a> for
+			href="http://www.outsharked.com/imagemapster/">ImageMapster</a> for
 		the highlighting map feature.
 	</p>
-	</div>
 </body>
 </html>

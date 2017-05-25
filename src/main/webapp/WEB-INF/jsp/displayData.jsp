@@ -15,59 +15,34 @@
 	src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.js"></script>
 <script type="text/javascript"
 	src="<c:url value="/resources/js/jquery.imagemapster.js" />"></script>
+<script type="text/javascript">
+	function selectImg(ind, k, shortId, longId) {
+		if (ind == 1) {
+			document.getElementById("imgLink" + k).href = "http://www.edr-edr.it/edr_programmi/view_img.php?id_nr="
+					+ longId;
+			document.getElementById("imgSrc" + k).src = "http://www.edr-edr.it/foto_epigrafi/thumbnails/"
+					+ shortId + "/th_" + longId + ".jpg";
+		} else {
+			ind--;
+			document.getElementById("imgLink" + k).href = "http://www.edr-edr.it/edr_programmi/view_img.php?id_nr="
+					+ longId + "-" + ind;
+			document.getElementById("imgSrc" + k).src = "http://www.edr-edr.it/foto_epigrafi/thumbnails/"
+					+ shortId + "/th_" + longId + "-" + ind + ".jpg";
+		}
+	}
+</script>
 
 </head>
 
 <body>
 
+	<%@include file="header.jsp"%>
+
 	<div class="container">
 		<p>
-			<c:out value="${fn:length(requestScope.resultsLyst)} results found" />
+			<c:out value="${fn:length(requestScope.resultsLyst)} graffiti found" />
 		</p>
-		<c:forEach var="k" begin="${1}"
-			end="${fn:length(requestScope.resultsLyst)}">
-			<c:set var="i" value="${requestScope.resultsLyst[k-1]}" />
-			<h4>
-				<c:out value="Result ${k}" />
-			</h4>
-			<ul>
-				<li><span class="prop">City:</span> <a
-					href="http://pleiades.stoa.org/places/433032">${i.ancientCity}</a></li>
-				<li><span class="prop">Findspot:</span>
-					${i.findSpot}</li>
-				<li><span class="prop">CIL Number:</span> ${i.bibliography}</li>
-				<c:choose>
-					<c:when test="${not empty i.contentWithLineBreaks}">
-						<li><span class="prop">Content:</span><br />
-							${i.contentWithLineBreaks}</li>
-					</c:when>
-				</c:choose>
-				<li><span class="prop">For more information, see Eagle
-						ID: </span> <a
-					href="http://www.edr-edr.it/edr_programmi/visualizza.php?id_nr=${i.eagleId}">#${i.eagleId}</a></li>
-				<c:if test="${i.getDrawingTags().size() > 0}">
-					<c:choose>
-						<c:when test="${not empty i.url}">
-							<li><a href="${i.url}"><img class="thumbnail"
-									src="http://www.edr-edr.it/foto_epigrafi/thumbnails/${fn:substring(i.eagleId, 3, 6)}/th_${i.eagleId.substring(3)}.jpg" /></a></li>
-
-						</c:when>
-						<c:otherwise>
-							<li><img class="thumbnail"
-								src="<c:url value="/resources/images/NoImg.gif" />" width=100
-								height=auto></li>
-						</c:otherwise>
-					</c:choose>
-					<li><span class="prop">Drawing Tag Name(s):</span> <c:forEach
-							var="dt" items="${i.getDrawingTags()}" varStatus="loopStatus">
-							<c:out value="${dt.name}"></c:out>
-							<c:if test="${!loopStatus.last}">, </c:if>
-						</c:forEach></li>
-					<li><span class="prop">Drawing Description:</span>
-						${i.getAgp().getDescription()}</li>
-				</c:if>
-			</ul>
-		</c:forEach>
+		<%@ include file="resultsList.jsp"%>
 	</div>
 </body>
 
