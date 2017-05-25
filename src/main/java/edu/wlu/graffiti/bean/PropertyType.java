@@ -3,6 +3,8 @@
  */
 package edu.wlu.graffiti.bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Represents the types of properties
  * 
@@ -36,13 +38,14 @@ public class PropertyType implements Comparable<PropertyType> {
 	}
 
 	private static String[] parseDescription(String description) {
-		String[] synonyms = description.split(",");
+		String[] synonyms = description.split(", ");
 		return synonyms;
 	}
 
 	/**
 	 * @return the id
 	 */
+	@JsonIgnore
 	public int getId() {
 		return id;
 	}
@@ -86,11 +89,23 @@ public class PropertyType implements Comparable<PropertyType> {
 		this.synonyms = parseDescription(description);
 	}
 
-	public boolean includes(Property p) {
+	/**
+	 * checks if the synonyms for this property type are included in the
+	 * property's name, as a whole word. Doesn't handle when the synonym is
+	 * multiple words.
+	 * 
+	 * @return true if one of the synonyms is contained as a whole word in the
+	 *         property name
+	 */
+	public boolean includedIn(Property p) {
+		// TODO: Convert to using a regular expression instead of splitting on
+		// spaces.
+		String[] wordsInProperty = p.getPropertyName().toLowerCase().split(" ");
 		for (String synonym : synonyms) {
-			if (p.getPropertyName().toLowerCase()
-					.contains(synonym.toLowerCase())) {
-				return true;
+			for (String word : wordsInProperty) {
+				if (word.equals(synonym.toLowerCase())) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -99,6 +114,20 @@ public class PropertyType implements Comparable<PropertyType> {
 	@Override
 	public int compareTo(PropertyType propertyType) {
 		return this.getName().compareTo(propertyType.getName());
+	}
+
+	/**
+	 * 
+	 * @param term
+	 * @return true if one of the synonyms equals the passed-in term.
+	 */
+	public boolean includes(String term) {
+		for (String synonym : synonyms) {
+			if (term.toLowerCase().equals(synonym.toLowerCase())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

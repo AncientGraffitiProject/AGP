@@ -4,19 +4,34 @@
  * It receives its information from users table in the database.
  */
 package edu.wlu.graffiti.bean;
- 
-public class User{
- 
+
+public class User {
+
+	private static final String ADMIN_ROLE_NAME = "admin";
 	String userName;
 	String name;
 
 	String password;
+	
+	// used for user validation
 	String confirmPassword;
- 
+	
+	boolean is_admin = false;
+	String role;
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+		is_admin = role.equals(ADMIN_ROLE_NAME);
+	}
+
 	public String getUserName() {
 		return userName;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -25,25 +40,29 @@ public class User{
 		return password;
 	}
 
-	public String getConfirmPassword() {
-		return confirmPassword;
+	public boolean isAdmin() {
+		return is_admin;
 	}
 
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
-	
-	public void name(String name) {
+
+	public void setName(String name) {
 		this.name = name;
 	}
-
 
 	public void setPassword(String password) {
 		this.password = password;
 	}
 
+	public String getConfirmPassword() {
+		return confirmPassword;
+	}
+	
 	public void setConfirmPassword(String confirmPassword) {
 		this.confirmPassword = confirmPassword;
 	}
+
 
 }

@@ -4,6 +4,8 @@
  */
 package edu.wlu.graffiti.bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class DrawingTag implements Comparable<DrawingTag> {
 	private int id;
 	private String name;
@@ -13,7 +15,18 @@ public class DrawingTag implements Comparable<DrawingTag> {
 	public DrawingTag() {
 		super();
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder(id);
+		builder.append(" ");
+		builder.append(name);
+		builder.append(" ");
+		builder.append(description);
+		return builder.toString();
+	}
 
+	@JsonIgnore
 	public int getId() {
 		return this.id;
 	}
