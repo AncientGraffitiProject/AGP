@@ -1,0 +1,268 @@
+#property_names {
+	display: none;
+}
+
+#property_names_chosen {
+	margin-left: 100px;
+}
+
+#property_names_chosen .chosen-choices, #property_names_chosen .chosen-drop {
+	width: 500px !important;
+}
+
+#property_names_chosen .default {
+	padding: 0 !important;
+	width: 500px !important;
+}
+
+.jumbotron {
+	/* background-image: url("/resources/images/herculaneum_banner.jpg"); */
+	background-image:
+		url("/Graffiti/resources/images/herculaneum_banner.jpg");
+	padding-top: 44px;
+	padding-bottom: 30px;
+	text-shadow: black 0.1em 0.1em 0.2em;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	color: white;
+}
+
+@media only screen and (max-width: 450px) {
+	.jumbotron .container h1 {
+		font-size: 30px;
+	}
+	.jumbotron .container p {
+		font-size: 16px;
+		padding: 0;
+		margin: 0;
+	}
+	.jumbotron .container {
+		padding: 0;
+		margin: 0;
+	}
+	.jumbotron {
+		padding: 40px 10px 10px 10px;
+	}
+}
+
+.jumbotron h1, .jumbotron .h1 {
+	font-size: 48px;
+}
+
+.jumbotron p {
+	font-weight: normal;
+}
+
+.navbar {
+	margin-bottom: 0px;
+}
+
+.navbar-inverse .navbar-nav>li>a {
+	color: white;
+}
+
+.navbar-inverse .navbar-nav>li>a:hover {
+	background-color: maroon;
+}
+
+#map img {
+	height: 400px;
+	width: auto;
+}
+
+img.thumbnail {
+	width: 200px;
+}
+
+#results {
+	width: 90%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#results h4 {
+	border-top-style: solid;
+	border-top-color: gold;
+}
+
+#results ul {
+	padding-bottom: 15px;
+}
+
+#person {
+	height: 300px;
+}
+
+.pic {
+	float: left;
+}
+
+.info {
+	margin-left: 250px;
+	postion: absolute;
+}
+
+th, td {
+	padding: 2px;
+}
+
+.propertyLabel {
+	font-weight: bold;
+	color: maroon;
+}
+
+#headerMap, #sidebarMap, #headerMap1, #headerMap2 {
+	border-style: solid;
+	border-color: #CE8177;
+}
+
+#headerMap, #headerMap1 {
+	top: 50px;
+	margin-left: 675px;
+	position: absolute;
+}
+
+#headerMap2 {
+	top: 50px;
+	margin-left: 890px;
+	position: absolute;
+}
+
+#headerMap img, #headerMap1 img {
+	height: 135px;
+	width: auto;
+}
+
+#headerMap2 img {
+	height: 135px;
+	width: auto;
+}
+
+#sidebarMap {
+	width: 200px;
+	position: absolute;
+	margin-left: 675px;
+}
+
+#sidebarMap img {
+	width: 190px;
+	height: auto;
+}
+
+footer {
+	bottom: 0;
+	width: 100%;
+	height: 50px;
+	float: bottom;
+	font-size: smaller;
+	font-style: italic;
+}
+
+select {
+	max-width: 100px;
+}
+
+textarea {
+	resize: none;
+}
+
+a {
+	color: #0033CC;
+}
+
+/* Needed for the gallery of images on the results pages. */
+input[name*="image"] {
+	display: none;
+}
+
+.buttons {
+	max-width: 100%;
+	margin: 0 auto;
+}
+
+#refine {
+	margin-top: 10px;
+	/*	color: maroon; */
+}
+
+img {
+	display: block;
+	margin: 0px;
+	padding: 0px;
+}
+
+[id^="imgSrc"] {
+	display: block;
+	max-width: 100%;
+	margin: 0 auto;
+}
+
+input[name*="image"]:checked+label {
+	border-color: #666;
+	opacity: 1;
+}
+
+label {
+	opacity: 0.7;
+	/*	border: 2px solid #999;
+	float: left;
+	cursor: pointer;
+	
+	max-width: 100%; */
+	height: auto;
+}
+
+.error {
+	color: #ff0000;
+}
+
+.errorblock {
+	color: #000;
+	background-color: #ffEEEE;
+	border: 3px solid #ff0000;
+	padding: 8px;
+	margin: 16px;
+}
+
+h3 {
+	color: maroon;
+}
+
+/*********** CREATE THE DEFAULTS FOR BUTTONS ****************/
+.btn-agp {
+	background-image: none;
+	text-shadow: 0 1px 0 #222;
+}
+
+.btn-agp {
+	color: #ffffff;
+	background-color: #900000;
+	border-color: #CE8177;
+}
+
+.btn-agp:hover, .btn-agp:focus, .btn-agp:active, .btn-agp.active, .open .dropdown-toggle.btn-agp
+	{
+	color: #ffffff;
+	background-color: #740103;
+	border-color: #ccc;
+}
+
+.btn-agp:active, .btn-agp.active, .open .dropdown-toggle.btn-agp {
+	background-image: none;
+}
+
+.btn-agp.disabled, .btn-agp[disabled], fieldset[disabled] .btn-agp,
+	.btn-agp.disabled:hover, .btn-agp[disabled]:hover, fieldset[disabled] .btn-agp:hover,
+	.btn-agp.disabled:focus, .btn-agp[disabled]:focus, fieldset[disabled] .btn-agp:focus,
+	.btn-agp.disabled:active, .btn-agp[disabled]:active, fieldset[disabled] .btn-agp:active,
+	.btn-agp.disabled.active, .btn-agp[disabled].active, fieldset[disabled] .btn-agp.active
+	{
+	background-color: #900000;
+	border-color: #CE8177;
+}
+
+.btn-agp .badge {
+	color: #900000;
+	background-color: #ffffff;
+}

@@ -1,0 +1,177 @@
+@CHARSET "UTF-8";
+
+/*
+Style sheet for the details page
+*/
+
+* {
+	box-sizing: border-box;
+}
+
+.right-align {
+	float: right;
+}
+
+.leftcol {
+	margin-top: 0px;
+	float: left;
+	width: 50%;
+	margin-bottom: 15px;
+	padding-bottom: 20px;
+	padding-right: 5px;
+	padding-left: 15px;
+}
+
+.rightcol {
+	margin-top: 0px;
+	float: right;
+	width: 50%;
+	margin-bottom: 15px;
+	padding-bottom: 20px;
+	padding-right: 15px;
+	padding-left: 5px;
+	/* background-color: grey; */
+}
+
+.fluid-img {
+	display: block;
+	margin-right: auto;
+	margin-left: auto;
+	max-width: 100%;
+	height: auto;
+	padding-bottom: 15px;
+}
+
+.propertyLabel {
+	text-align: right;
+}
+
+th, td {
+	padding: 5px;
+	max-width: 600px;
+}
+
+.top-div {
+	padding-left: 15px;
+}
+
+.center-div {
+	max-width: 400px;
+    height: auto;
+    margin: 10px;
+    padding: 10px;
+    position: relative;
+	text-align: center;
+    /* background-color: fuchsia;  */
+}
+
+.graffiti_content {
+	max-width: 400px;
+    height: auto;
+    margin: 10px;
+    padding: 10px;
+    position: relative;
+}
+
+h3 {
+	font-size: 28px;
+	margin: -10px 0px 10px 0px;
+}
+
+h5 {
+	font: helvetica-neue, helvetica;
+	font-size: 20px;
+}
+
+h6 {
+	font: helvetica-neue, helvetica;
+	font-style: italic;
+	font-size: 16px;
+	margin: -10px 0px 10px 0px;
+}
+
+.detail-heading {
+	max-width: 800px;
+	text-align: center;
+}
+
+.detail-body {
+	max-width: 500px;
+}
+
+.info-table {
+	max-width: 100%;
+	border-style: solid;
+	border-width: 1px;
+	margin-left: auto;
+	margin-right: auto;
+	float: center;
+}
+
+.property-table {
+	max-width: 65%;
+	float: left;
+}
+
+th {
+	vertical-align: top;
+	width: 180px;
+}
+
+@media only screen and (max-width: 850px) {
+	[class*="col"]{
+		width: 100%;
+	}
+	[id*="headerMap"]{
+		display: none;
+	}
+}
+input[name="image"] {
+	display: none;
+}
+
+.buttons {
+	max-width: 100%;
+	height: auto;
+	margin: 0 auto;
+}
+
+img {
+	display: block;
+	margin: 0px;
+	padding: 0px;
+}
+
+#imgSrc {
+	display: block;
+	max-width: 100%;
+	margin: 0 auto;
+}
+
+input[name="image"]:checked+label {
+	border-color: #666;
+	opacity: 1;
+}
+
+label {
+	border: 3px solid #999;
+	float: left;
+	cursor: pointer;
+	opacity: 0.6;
+	max-width: 100%;
+	height: auto;
+}
+
+.button_bar {
+	padding: 0px 30px 50px;
+}
+
+.thumb {
+	height: 100px;
+}
+
+@media only screen and (max-width: 550px) {
+	[class="thumb"]{
+		height: 45px;
+	}
+}

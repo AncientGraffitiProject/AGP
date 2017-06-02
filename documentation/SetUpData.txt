@@ -1,0 +1,26 @@
+Data Set Up 
+================================================
+
+ - Set up PostGreSQL database
+   - Need the DB schema
+
+Populate Default Data 
+ - Insert Property Types - InsertPropertyTypes
+ - Insert Drawing Tags
+ 
+ Populate Data
+ - Insert Insula - InsertInsulae - both Pompeii and Herculaneum
+ - Insert Properties (includes the mappings) - InsertProperties
+ - Insert Graffiti - ImportEDRData
+ - Insert drawing tags - InsertDrawingTagMappings
+ - InsertDescriptionsAndTranslations
+
+Do some translations of data
+ - Extract and Translate Language
+ - Extract and Translate Writing Style
+ - AddEDRLinksToApparatus --> add the links to EDR in the apparatus.
+ 
+Update the number of drawings: UpdateNumberOfImages
+
+Update Elastic Search - AddInscriptionsToElasticSearch
+ 

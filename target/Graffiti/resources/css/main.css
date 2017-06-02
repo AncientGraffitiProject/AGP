@@ -1,0 +1,53 @@
+@CHARSET "UTF-8";
+
+#mapid {
+	height: 450px;
+	width: 800px;
+}
+
+#container {
+    width: 1200px;
+    margin: auto;
+}
+
+#map {
+	height: 500px;
+	width: 800px;
+}
+
+.mapdiv {
+	height: 500px;
+	width: 800px;
+	float: left;
+}
+
+.propertymapdiv {
+	height: 250px;
+	width: 35%;
+	float: right;
+}
+
+#newDiv {
+	width: 350px;
+	float: right;
+}
+
+.info {
+	padding: 6px 8px;
+	font: 14px/16px Arial, Helvetica, sans-serif;
+	background: white;
+	background: rgba(255, 255, 255,0.8);
+	box-shadow: 0 0 15px rgba(0,0,0,0.2);
+	border-radius: 5px;
+	max-width: 100%;
+}
+
+.info h4 {
+	margin: 0 0 5px;
+	color: #777;
+}
+
+#moreInfo {
+	height: 100px;
+	width: 200px;
+}

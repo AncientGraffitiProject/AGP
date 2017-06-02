@@ -1,0 +1,153 @@
+@CHARSET "UTF-8";
+
+#selectors {
+	padding-bottom: 20px;
+	float: right;
+}
+
+#idCol {
+	width: 10%;
+}
+
+#textCol {
+	width: 20%;
+}
+
+#transCol {
+	width: 20%;
+}
+
+/* Michael Dik's Code */
+.imgPop {
+	width: 200px;
+	display: inline-block;
+	cursor: pointer;
+}
+
+.poppedCaption {
+	align: center;
+	background: #fff;
+	position: relative;
+	width: 500px;
+	z-index: 10;
+	margin: auto;
+	padding-left: 8px;
+	padding-right: 8px;
+}
+
+.poppedCaption a {
+	text-align: center;
+	color: maroon;
+	font-weight: bold;
+	font-size: larger;
+}
+
+.poppedPhoto {
+	align: center;
+	width: 300px;
+	height: 300px;
+	z-index: 2147483640;
+	position: relative;
+}
+
+.closePopup {
+	float: right;
+	z-index: 2147483640;
+	position: relative;
+	color: red;
+	font-size: 20px;
+	cursor: pointer;
+}
+
+.poppedPhoto2 {
+	align: center;
+	width: 300px;
+	height: 300px;
+	z-index: 2147483640;
+	position: relative;
+	margin-top: -30px;
+	max-width: 500px;
+}
+
+.closeX {
+	cursor: pointer;
+	float: right;
+	margin-top: -10px;
+}
+
+.rightArrow {
+	/* osition: absolute; */
+	top: -140px;
+	right: 251px;
+	z-index: 2147483640;
+	cursor: pointer;
+	width: 100px;
+	height: 300px;
+	float: right;
+}
+
+.leftArrow {
+	/* position: absolute; */
+	top: -150px;
+	width: 100px;
+	height: 300px;
+	left: 251px;
+	z-index: 2147483640;
+	cursor: pointer;
+	float: left;
+}
+
+.white {
+	background: white;
+	border: 2px solid #000;
+	padding: 10px;
+}
+
+.blackOverlay {
+	display: none;
+	background: rgba(0, 0, 0, .9);
+	position: fixed;
+	left: 0;
+	width: 1000000px;
+	height: 1000000px;
+	opacity: 100%;
+	z-index: 2147483640;
+	/* cursor: pointer; */
+}
+
+.none {
+	display: none;
+}
+
+.centered {
+	text-align: center;
+	align: center;
+	margin: auto;
+}
+
+#blanket {
+	background-color: #111*background:none;
+	position: absolute;
+	z-index: -9001;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+}
+
+img {
+	display: inherit;
+	max-width: 500px;
+}
+
+.popup {
+	display: none;
+	background: #fff;
+	position: absolute;
+	top: 10%;
+	left: 50%;
+	width: 600px;
+	height: 80%;
+	margin-left: -300px;
+	z-index: 10;
+	border: 2px solid #000;
+}
