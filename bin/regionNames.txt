@@ -1,3 +1,0 @@
-
-"I7", "To be continued"
-"","","I.8.1","I.8.1  Taberna, Shop of the fruit-vendor Felix Pomarius","I.8.2","I.8.2  Casa di Stephanus","I.8.3","I.8.3  Shop","I.8.5","I.8.5  Casa della Statuetta Indiana","I.8.9","I.8.8-9  Caupona di Betutius Placidus","I.8.10","I.8.10  Hospitium del Pulcinella","I.8.13","I.8.13  Officina/Workshop of A. Granius Romanus","I.8.14","I.8.14  Casa di Epidius Primus","I.8.15","I.8.15  Caupona and Officina di Fufidius Successus","I.8.16","I.8.16 (back door)  Caupona and Officina di Fufidius Successus","I.8.17", "I.8.17  Casa dei Quattro Stili", "I.8.18","I.8.18  Casa di Balbus"
