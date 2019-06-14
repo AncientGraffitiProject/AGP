@@ -37,7 +37,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * This program translates each property and it's features from the SQL database
+ * This program translates each property and its features from the SQL database
  * and json shape files to pompeiiPropertyData.txt,pompeiiPropertyData.js,
  * herculaneumPropertyData.txt, and herculaneumPropertyData.js. Then, the data
  * can be used to efficiently provide data to geoJson for use in the maps of
