@@ -1,79 +1,79 @@
+<!-- Author: Trevor Stalnaker -->
+<!-- The page that displays the figural graffiti gallery -->
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page import="java.util.List"%>
 <%@ page import="edu.wlu.graffiti.bean.Inscription"%>
 <div id="gallery">
-	<!-- Captions for the image modals -->
-	<!--  Hidden Photos -->
-	<div>
-		<!--  Hidden Photos -->
-		<%
-			int idCounter = 1;
-		%>
-		<ul>
-			<c:forEach var="i" items="${figuralHits}">
-				<span class="poppedPhoto none centered" id="<%=idCounter%>">
+	<p>Selected Figural Graffiti</p>
+			
+	<!--Modal "Hidden" Photos-->
+	<%int idCounter = 1;%>
+		
+	<!-- Iterate through all figural hits -->
+	<c:forEach var="i" items="${figuralHits}">
+	
+		<!-- Create a modal element -->
+		<div class="modal" id="<%=idCounter%>">
+		
+			<!-- Create the X in the upper right hand corner -->
+			<span class="close" onclick="closeModal(<%=idCounter%>)">&times;</span>
+			
+			<!-- Add the EDR ID and the CIL above the image -->
+			<p class="modal-content tagPara">AGP-${i.agp.edrId}</p>
+			<p class="modal-content tagPara">${i.agp.cil}</p>
+			
+			<!-- Add an image link to the modal -->
+			<a href="http://www.edr-edr.it/edr_programmi/view_img.php?id_nr=${i.agp.greatestHitsInfo.preferredImage}" 
+			   target="_blank">
+				<img class="modal-content" id="img01" 
+				     src="http://www.edr-edr.it/foto_epigrafi/immagini_uso/${i.edrDirectory}/${i.agp.greatestHitsInfo.preferredImage}.jpg"/>
+			</a>
+				<!-- Code for testing on the local branch -->
+				<!--<a href="../resources/images/${i.agp.greatestHitsInfo.preferredImage}" target="_blank">
+					<img class="modal-content" id="img01" 
+				     	src="../resources/images/${i.agp.greatestHitsInfo.preferredImage}"/>
+				</a>-->
+			
+			<!-- Create the left and right arrow buttons -->
+			<div class="modal-content" id="arrowButtonDiv">
+				<%if (idCounter != 1){%>
+					<button id="leftArrow" class="arrow" onclick="goLeft(<%=idCounter%>)">&lt&lt&lt</button>
+				<%}%>
+				<%List<Inscription> hits = (List<Inscription>) request.getAttribute("figuralHits");
+				if (idCounter != hits.size()) {%>
+					<button id="rightArrow" class="arrow" onclick="goRight(<%=idCounter%>)">&gt&gt&gt</button>
+				<%}%>
+			</div>
+			
+			<!-- Add caption below image -->
+			<p class="modal-content caption">${i.agp.greatestHitsInfo.commentary }</p>
+			
+			<!-- Add the learn more link to the bottom of the modal -->
+			<p class="modal-content linkPara">
+			<a class="tagPara" href="<%=request.getContextPath() %>/graffito/AGP-${i.edrId}"
+							  id="${i.edrId}"> Learn More </a></p>
+							  
+		</div>
+		<%idCounter = idCounter + 1;%>
+	</c:forEach>
+	
 
-					<li><a class="poppedPhoto2"
-						href="http://www.edr-edr.it/edr_programmi/view_img.php?id_nr=${i.edrId.substring(3)}"
-						target="_blank"> <img
-							src="http://www.edr-edr.it/foto_epigrafi/immagini_uso/${i.edrId.substring(3,6)}/${i.agp.greatestHitsInfo.preferredImage}.jpg" />
-					</a> <!--  Next and Previous Button --> <%
- 	List<Inscription> hits = (List<Inscription>) request.getAttribute("figuralHits");
-
- 		if (idCounter != hits.size()) {
- %>
-						<p>
-							<a class="poppedPhoto rightArrow" onclick="next(<%=idCounter%>)">
-								<img src="/Graffiti/resources/images/rightArrow.jpg">
-							</a>
-						</p> <%
- 	}
- %> <%
- 	if (idCounter != 1) {
- %>
-						<p>
-							<a class="poppedPhoto leftArrow"
-								onclick="previous(<%=idCounter%>)"> <img
-								src="/Graffiti/resources/images/leftArrow.jpg">
-							</a>
-						</p> <%
- 	}
- %> <!-- Caption -->
-						<div class="poppedCaption white">
-							<p>
-								<a class="closeX" onclick="closePopup(<%=idCounter%>)"> <img
-									src="/Graffiti/resources/images/CloseX2.png">
-								</a> <a
-									href="<%=request.getContextPath() %>/graffito/${i.agp.agpId}"
-									target="_blank">${i.agp.summary }</a>
-							</p>
-							<p>${i.agp.greatestHitsInfo.commentary }</p>
-						</div></li>
-
-				</span>
-				<%
-					idCounter = idCounter + 1;
-				%>
-			</c:forEach>
-
-		</ul>
-
-
-
-	</div>
-
-
-
-	<!--  UnHidden Photos-->
-	<p class="centered">
-
+	<!--Gallery "UnHidden" Photos-->
+	<p class="centered" id="galleryPara">
+		<br style="line-height:8px;">
 		<c:forEach var="k" begin="1" end="${fn:length(figuralHits) }">
-
 			<c:set var="inscription" value="${figuralHits[k-1]}" />
-			<img class="imgPop"
-				src="http://www.edr-edr.it/foto_epigrafi/thumbnails/${inscription.edrId.substring(3,6)}/th_${inscription.agp.greatestHitsInfo.preferredImage}.jpg"
-				onclick="showPopup(${k})" />
+			<!-- Currently using thumb nails, to make images clearer use the same img src from above -->
+			<img class="imgPop"			
+				 src="http://www.edr-edr.it/foto_epigrafi/immagini_uso/${inscription.edrDirectory}/${inscription.agp.greatestHitsInfo.preferredImage}.jpg"
+				 alt="No Image Available"
+				 onclick="imgClicked(${k})"/>
+			<!-- Code for testing on the Local Branch -->
+			<!--<img class="imgPop"			
+				 src="../resources/images/${inscription.agp.greatestHitsInfo.preferredImage}"
+				 alt="No Image Available"
+				 onclick="imgClicked(${k})"/>   -->
 		</c:forEach>
 	</p>
 </div>

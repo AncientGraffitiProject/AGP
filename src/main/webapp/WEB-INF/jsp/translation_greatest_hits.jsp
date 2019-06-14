@@ -2,7 +2,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <div id="original">
-	<!--  <h3>Graffiti from Herculaneum</h3>  -->
 	<table class="table table-striped table-bordered"
 		id="greatest_hits_table">
 		<thead>
@@ -15,11 +14,11 @@
 				 -->
 			</tr>
 		</thead>
-		<!--  LOOOP  -->
+		<!--  LOOP  -->
 		<tbody>
 			<c:forEach var="i" items="${translationHits}">
 				<tr>
-					<td><a
+					<td class="center"><a
 						href="<%=request.getContextPath() %>/graffito/${i.agp.agpId}">${i.agp.agpId}</a>
 						<c:if test="${not empty i.agp.cil }">
 							<br />${i.agp.cil}
