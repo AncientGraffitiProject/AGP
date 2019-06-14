@@ -1,34 +1,39 @@
-Pompeii,I.4,5,,Casa del Citarista,,House,
-Pompeii,I.4,22,23,Building
-Pompeii,I.6,4,,Casa del Sacello Iliaco,,
-Pompeii,I.6,7,,Fullonica of Stephanus,,
-Pompeii,I.7,19,,Casa dell' Efebo,,House,
-Pompeii,I.8,1,,Shop of the fruit-vendor Felix Pomarius,,Shop,
-Pompeii,I.8,2,,Casa di Stephanus,,House,
-Pompeii,I.8,3,,Shop,,Shop,
-Pompeii,I.8,5,,Casa della Statuetta Indiana,,House,
-Pompeii,I.8,8,,Thermopolium of Vetutius Placidus,,Tavern,
-Pompeii,I.8,9,,House of Vetutius Placidus,,House,
-Pompeii,I.8,10,,Hospitium del Pulcinella,,Inn,
-Pompeii,I.8,13,,Officina/Workshop of A. Granius Romanus,,Workshop,
-Pompeii,I.8,14,,Casa di Epidius Primus,,House,
-Pompeii,I.8,15,,Caupona and Officina di Fufidius Successus,,Tavern,
-Pompeii,I.8,16,,Caupona and Officina di Fufidius Successus (back door),,Workshop,
-Pompeii,I.8,17,,Casa dei Quattro Stili,,House,
-Pompeii,I.8,18,,Casa di Balbus,,House,
-Pompeii,II.4,3,,Praedia of Julia Felix
-Pompeii,II.4,6,,Praedia of Julia Felix
-Pompeii,II.4,7,,Praedia of Julia Felix
-Pompeii,II.4,10,,Praedia of Julia Felix
-Pompeii,II.4,13,,Aedicula,Aedicula,Sacred Space
-Pompeii,II.7,,,Campus ad amphitheatrum
-Pompeii,VI.9,6,,Casa dei Dioscuri,,House
-Pompeii,VI.16,28,,Casa della Caccia di Tori,,House
-Pompeii,VII.12,18-20,,Lupanar,,Brothel
-Pompeii,VIII.3,7,,Building
-Pompeii,VIII.3,8,,Casa del Cinghiale,Casa del Cinghiale,House
-Pompeii,VIII.3,9,,Building
-Pompeii,VIII.3,21,,Building
-Pompeii,VIII.3,24,,House of Apollo and Coronis,Casa di Apollo e Coronis,House
-Pompeii,VIII.5,19,,Building
-Pompeii,VIII.7,19,,Teatro Piccolo
+Pompeii,I.8,1,,Bottega del fruttivendolo Felix,Shop of the fruit-vendor Felix Pomarius,Bottega del fruttivendolo Felix,Shop,
+Pompeii,I.8,2,,Casa del Pomarius Felix,,Casa del Pomarius Felix,House,
+Pompeii,I.8,3,,,,,House of Stephanus?,
+Pompeii,I.8,5,,Casa della statuetta indiana,,Casa della statuetta indiana,House,
+Pompeii,I.8,7,,,,,Shop,
+Pompeii,I.8,9,8,Casa di Vetutius Placidus,Thermopolium and house of L. Vetutius Placidus,Termopolio,House,
+Pompeii,I.8,10,,Taberna vasaria,Inn of Pulcinella ,Taberna vasaria,Inn,"Inn, Tavern?"
+Pompeii,I.8,12,,,Workshop and stable,,Workshop,
+Pompeii,I.8,13,,Officina di A. Granius Romanus,Workshop of A. Granius Romanus,Officina di A. Granius Romanus,Workshop,"House, Workshop"
+Pompeii,I.8,14,,Casa di Epidius Primus,House of M. Epidius Primus,Casa di Epidius Primus,House,
+Pompeii,I.8,15,,Officina di N. Fufidius Successus,,Officina di N. Fufidius Successus,Workshop,
+Pompeii,I.8,16,,,,,,
+Pompeii,I.8,17,11,Casa dei Quattro Stili,"House of the Four Styles, House of L. V. P. ",Casa dei Quattro Stili,House,
+Pompeii,I.8,18,,(Unnamed),,(Unnamed),House,
+Pompeii,I.8,19,,,,,Workshop,
+Pompeii,II.7,1,2-10,Campus ad amphitheatrum,The Great Palaestra,Grande Palestra,Public Space,
+Pompeii,VII.12,18-20,,Lupanare,,Lupanare,"Workshop, Brothel",
+Pompeii,V.1,1,32,,,,Tavern,
+Pompeii,V.1,2,,,,,Tavern,
+Pompeii,V.1,4,,,,,Workshop,
+Pompeii,V.1,5,,,,,Workshop,
+Pompeii,V.1,7,,Casa del Toro,,Casa del Toro,House,
+Pompeii,V.1,8,,,,,Shop,
+Pompeii,V.1,13,,,,,Tavern,
+Pompeii,V.1,15,,Bakery,,Pistrina,"Workshop, Bakery",
+Pompeii,V.1,17,,,,,Workshop,
+Pompeii,V.1,18,,Casa degli Epigrammi,,Casa degli Epigrammi,House,
+Pompeii,V.1,19,,,,,Shop,
+Pompeii,V.1,20,21,,,,Shop,
+Pompeii,V.1,22,,,,,Shop,
+Pompeii,V.1,24,,,,,Shop,
+Pompeii,V.1,23,10,Casa di Caecilius Iucundus (Casa di Faustus),,,House,
+Pompeii,V.1,25,,,,,Shop,
+Pompeii,V.1,26,,Casa di Caecilius Iucundus,,Casa di L. Caecilius Iucndus e casa annessa,House,
+Pompeii,V.1,27,,,,,Shop,
+Pompeii,V.1,28,,Casa di M. Tofelanus Valens,,Casa di M. Tofelanus Valens,Workshop,
+Pompeii,V.1,29,,,,,Shop,
+Pompeii,V.1,30,,(Unnamed),,(Unnamed),Shop,
+Pompeii,V.1,31,,(Unnamed),,(Unnamed),Shop,
