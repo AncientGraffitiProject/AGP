@@ -2,12 +2,8 @@
 <html>
 <head>
 <meta charset="UTF-8">
-
-<link rel="stylesheet" type="text/css"
-	href='<c:url value="/resources/css/proj.css" />' />
 <title>Login Page</title>
 <%@include file="/resources/common_head.txt"%>
-
 <style type="text/css">
 .form-login {
 	background-color: #EEE;
@@ -44,38 +40,34 @@ h4 {
 }
 </style>
 </head>
-
-
 <body>
 	<%@include file="/WEB-INF/jsp/header.jsp"%>
 	<div class="container">
-		<form name='login' method='POST' action="<%=request.getContextPath() %>/LoginValidator">
+		<form name='login' method='POST'
+			action="<%=request.getContextPath()%>/LoginValidator">
 			<div id="error_msg">
 				<%
 					String error_msg = "";
 					if (request.getAttribute("error_msg") != null) {
 						error_msg = (String) request.getAttribute("error_msg");
 				%>
-
 				<div class="alert alert-danger" role="alert">
 					<%=error_msg%>
 				</div>
-
 				<%
 					}
 				%>
 			</div>
-
 			<div class="login_container">
 				<div class="row">
 					<div class="col-md-offset-5 col-md-3">
 						<div class="form-login">
 							<h4>Login</h4>
-							<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" class="form-control" />
-							 <input type="text" id="userName"
-								name="username" class="form-control input-sm chat-input"
-								placeholder="username" /> <br /> <input type="password"
-								id="userPassword" name="password"
+							<input type="hidden" name="${_csrf.parameterName}"
+								value="${_csrf.token}" class="form-control" /> <input
+								type="text" id="userName" name="username"
+								class="form-control input-sm chat-input" placeholder="username" />
+							<br /> <input type="password" id="userPassword" name="password"
 								class="form-control input-sm chat-input" placeholder="password" />
 							<br />
 							<div class="wrapper">
@@ -89,5 +81,6 @@ h4 {
 			</div>
 		</form>
 	</div>
+	<%@include file="footer.jsp" %>
 </body>
 </html>
