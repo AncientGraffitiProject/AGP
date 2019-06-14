@@ -22,7 +22,7 @@ public class InscriptionValidator implements Validator{
  
 		Inscription insc = (Inscription)target;
  
-		if(!insc.getEagleId().substring(0,3).equals("EDR")){
+		if(!insc.getEdrId().substring(0,3).equals("EDR")){
 			errors.rejectValue("eagleId", "notCorrectForm.eagleId");
 		}
 
