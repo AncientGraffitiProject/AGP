@@ -44,9 +44,8 @@ public class StoreInsulaeFromDatabaseForgeoJsonMap {
 
 	private static final String POMPEII_INSULA_DATA_TXT_FILE = "src/main/resources/map_starter_text/pompeiiInsulaData.txt";
 	private static final String POMPEII_INSULA_JAVASCRIPT_DATA_FILE_LOC = "src/main/webapp/resources/js/pompeiiInsulaData.js";
-	// these files don't exit yet...?
 	private static final String POMPEII_INIT_JAVASCRIPT_LOC = "src/main/resources/map_starter_text/pompeiiInsulaDataFirst.txt";
-	private static final String POMPEII_GEOJSON_FILE_LOC = "src/main/resources/geoJSON/new_pompeii_cityblocks.json";
+	private static final String POMPEII_GEOJSON_FILE_LOC = "src/main/resources/geoJSON/pompeii_cityblocks.json";
 	
 	final static String SELECT_PROPERTIES_ON_INSULA  = "SELECT count(*) FROM agp_inscription_info"
 			+ " WHERE property_id IN (" + "SELECT properties.id FROM properties "
