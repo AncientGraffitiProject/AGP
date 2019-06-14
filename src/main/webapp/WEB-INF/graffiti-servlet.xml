@@ -27,8 +27,12 @@
 	<aop:config proxy-target-class="true" />
 
 	<mvc:resources mapping="/resources/**" location="/resources/" />
+	<mvc:resources mapping="swagger-ui.html" location="classpath:/META-INF/resources/" />
+	<mvc:resources mapping="/webjars/**"
+		location="classpath:/META-INF/resources/webjars/" />
 
-	<context:component-scan base-package="edu.wlu.graffiti.controller" />
+	<context:component-scan
+		base-package="edu.wlu.graffiti.controller; edu.wlu.graffiti.swagger" />
 
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close" p:driverClassName="${db.driverClassName}"
@@ -53,6 +57,12 @@
 		p:dataSource-ref="dataSource" />
 
 	<bean id="editorDao" class="edu.wlu.graffiti.dao.EditorDao"
+		p:dataSource-ref="dataSource" />
+
+	<bean id="themeDao" class="edu.wlu.graffiti.dao.ThemeDao"
+		p:dataSource-ref="dataSource" />
+		
+	<bean id="photosDao" class="edu.wlu.graffiti.dao.PhotosDao"
 		p:dataSource-ref="dataSource" />
 
 	<bean id="viewResolver"
