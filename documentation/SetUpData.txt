@@ -3,13 +3,10 @@ Data Set Up
 
  - Set up PostGreSQL database
    - Need the DB schema
- - Get Insula and Properties from Google Drive
- 	- get from appropriate tab named "for DB"
- - Get Caption data, etc. from Google Drive
- 	- 
- - Get Figural information from Google Drive
- 	- 
- - Get atypical address information from Google Drive
+ - Get Insula and Properties
+ - Get Caption data, etc.
+ - Get Figural information
+ - Get atypical address information
  	- FindspotsWithoutTypicalAddresses
 
 Populate Default Data 
@@ -36,7 +33,7 @@ Populate Default Data
 		InsertFeaturedGraffiti.insertFeaturedGraffiti();
 		InsertTranslations.insertTranslationGraffiti();
 		
-	To remove inscriptions where the properties are not known (in Pompeii):
+	To remove inscriptions where the properties are not known (for us, in Pompeii):
 	
 	select * from agp_inscription_info, edr_inscriptions where agp_inscription_info.edr_id = edr_inscriptions.edr_id and property_id IS NULL and ancient_city= 'Pompeii';
 	
