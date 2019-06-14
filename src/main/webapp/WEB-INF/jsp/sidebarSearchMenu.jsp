@@ -1,8 +1,18 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
-<%@ page import="edu.wlu.graffiti.controller.FilterController"%>
+<%@ page import="edu.wlu.graffiti.controller.GraffitiController"%>
 
+<%@ page import="java.util.*" %>
+
+<script>
+	$(document).ready(function() {
+		$('[data-toggle="tooltip"]').tooltip();
+	});
+</script>
+
+<script type="text/javascript"
+	src="<c:url value="/resources/js/bootstrap-modal-popover.js"/>"></script>
 
 <style type="text/css">
 .panel-default>.panel-heading {
@@ -21,10 +31,29 @@
 	border-color: #fff;
 }
 
+table.center {
+	margin-left: auto;
+	margin-right: auto;
+}
+
 .btn-custom {
-	width: 70px;
+	width: 78px;
 	font-size: 12px;
 	background-color: #ddd;
+}
+
+.btn-keyboard {
+	width: 160px;
+	font-size: 12px;
+	background-color: #ddd;
+}
+
+#greekKeys input[type="button"] {
+	padding-top: 2px;
+	padding-right: 6px;
+	padding-bottom: 3px;
+	padding-left: 6px;
+	border-width: 2px;
 }
 
 .label-primary, .label {
@@ -68,13 +97,87 @@ input {
 button:disabled {
 	color: #aaa;
 }
+
+.pointer {
+	cursor: pointer;
+}
 </style>
+
+<%--script for checking hierarchical checkboxes for search--%>
+<script type="text/javascript">
+
+//not used anymore ==> used to be called when a child checkbox was checked 
+//in property types
+function check_big_category(childCheckbox, parentID){
+	var parent = document.getElementById(parentID);
+	var checkboxes = document.getElementsByName(childCheckbox.name);
+	for (var i=0; i<checkboxes.length; i++){
+		if (checkboxes[i].checked != true){
+			parent.checked = false;
+			return false;
+		}
+	}
+	parent.checked = true;
+}
+
+function check_sub_category(parentCheckbox, childrenName){
+	var checkboxes = document.getElementsByName(childrenName);
+	for(var i=0; i<checkboxes.length; i++) {
+		checkboxes[i].checked = parentCheckbox.checked;
+	}	
+}
+
+function select_parent_and_children(parentCheckbox, childrenName, filterParentFunction, parentLabel){
+	filterParentFunction;
+	var checkboxes = document.getElementsByName(childrenName);
+	for(var i=0; i<checkboxes.length; i++){
+		var necessaryAspects = checkboxes[i].value.split(", ");
+		if (termExists("Property Type: " + parentLabel) && !termExists("Property Type: " + necessaryAspects[0])){
+			filterBy('Property Type', necessaryAspects[0], necessaryAspects[1], necessaryAspects[2]);
+		}
+		else if (!termExists("Property Type: " + parentLabel) && termExists("Property Type: " + necessaryAspects[0])){
+			filterBy('Property Type', necessaryAspects[0], necessaryAspects[1], necessaryAspects[2]);
+		}
+		
+	}
+}
+
+//not used anymore ==> used to be called when a child checkbox was checked 
+//in property types
+function filter_children_selection(childCheckbox, parentID, parentLabel, parentChoice){
+	var parent = document.getElementById(parentID);
+	var checkboxes = document.getElementsByName(childCheckbox.name);
+	for (var i=0; i<checkboxes.length; i++){
+		if (checkboxes[i].checked != true){
+			if (termExists("Property Type: " + parentLabel)){
+				removeSearchTermByName("Property Type: " + parentLabel);
+			}
+			return false;
+		}
+	}
+	addSearchTerm('Property Type', parentLabel, parentChoice, parentID);
+}
+
+</script>
+
 <%
 	boolean s = false;
 	if (session.getAttribute("authenticated") != null) {
 		s = (Boolean) session.getAttribute("authenticated");
 	}
 %>
+
+<div id="popupButton" class="popover">
+	<div class="arrow"></div>
+	<div class="popover-content">
+		<table class="center">
+			<tr>
+				<td nowrap align="center"><div id="greekKeys"></div>
+			</tr>
+		</table>
+	</div>
+</div>
+
 <div class="panel-group" style="width: 185px; float: left;">
 	<div class="panel panel-default">
 
@@ -111,9 +214,13 @@ button:disabled {
 				<c:forEach var="k" begin="${1}"
 					end="${fn:length(requestScope.cities)}">
 					<c:set var="city" value="${requestScope.cities[k-1]}" />
-					<span style="display: block;" data-toggle="collapse"
-						data-target="#i_${city}" onclick="switchSign('i_${city}');">
-						${city}<span id="expandi_${city}" style="float: right;">&#43;</span>
+					<span class="pointer" style="display: block;" 
+						 data-toggle="collapse"
+						 data-target="#i_${city}" 
+						 onclick="switchSign('i_${city}');">
+						${city}<span class="pointer" 
+						 id="expandi_${city}"
+						 style="float: right;">&#43;</span>
 					</span>
 					<div class="checkbox collapse" id="i_${city}">
 						<c:forEach var="l" begin="${1}"
@@ -144,19 +251,25 @@ button:disabled {
 					end="${fn:length(requestScope.cities)}">
 					<c:set var="city" value="${requestScope.cities[k-1]}" />
 					<div class="${city} collapse in">
-						<span style="display: block;" data-toggle="collapse"
-							data-target=".p_${city}" onclick="switchSign('p_${city}');">
-							${city}<span id="expandp_${city}" style="float: right;">&#43;</span>
+						<span style="display: block;" class="pointer"
+							data-toggle="collapse"
+							data-target=".p_${city}"
+							onclick="switchSign('p_${city}');">
+							${city}<span class="pointer" 
+							id="expandp_${city}" 
+							style="float: right;" >&#43;</span>
 						</span>
 						<c:forEach var="l" begin="${1}"
 							end="${fn:length(requestScope.insulaList)}">
 							<c:set var="insula" value="${requestScope.insulaList[l-1]}" />
 							<c:if test="${insula.modernCity == city}">
 								<div class="p_${city} collapse" style="margin-left: 10px;">
-									<span style="display: block;" data-toggle="collapse"
+									<span style="display: block;" class="pointer"
+										data-toggle="collapse"
 										data-target="#p_${insula.id}"
 										onclick="switchSign('p_${insula.id}');">
-										${insula.fullName}<span id="expandp_${insula.id}"
+										${insula.fullName}<span class = "pointer"
+										id="expandp_${insula.id}"
 										style="float: right;">&#43;</span>
 									</span>
 									<div class="checkbox collapse" id="p_${insula.id}">
@@ -189,13 +302,45 @@ button:disabled {
 		<div id="collapse5" class="panel-collapse collapse">
 			<div class="panel-body">
 				<div class="checkbox" id="Property_Type">
-					<c:forEach var="k" begin="${1}"
-						end="${fn:length(requestScope.propertyTypes)}">
+				
+					<c:forEach var="k" begin="${1}" end="${fn:length(requestScope.propertyTypes)}">
 						<c:set var="pt" value="${requestScope.propertyTypes[k-1]}" />
-						<label class="checkbox-label"><input id="pt${pt.id}"
-							type="checkbox" value=""
-							onclick="filterBy('Property Type', '${pt.name}', '${pt.id}', 'pt${pt.id }');" />${pt.name}</label>
-					</c:forEach>
+						<c:set var="parentID" value="${pt.id}"/>
+						<c:if test="${pt.isParent}">
+						
+						<ul style="list-style: none; padding-left: 0px;">
+						<li>
+						<c:choose>
+						<c:when test="${fn:length(pt.children)!=0}">
+							<span style="display: inline; max-height: 20px"><span style="padding-left: 0px">
+							<label class="checkbox-label" style="display: inline;"><input id="pt${pt.id}" type="checkbox" value="" 
+							onchange="check_sub_category(this, '${pt.name}s'); 
+							select_parent_and_children(this, '${pt.name}s', filterBy('Property Type', '${pt.name}', '${pt.id}', 'pt${pt.id }'), '${pt.name}')"/>${pt.name}
+							</label><span id="expandpt_${pt.id}" class="pointer" style="float: right;" data-toggle="collapse" data-target="#pt_${pt.id}" onclick="switchSign('pt_${pt.id}');">&#43;</span></span></span>
+							
+							<div class="collapse" id="pt_${pt.id}">
+							<ul style="list-style: none; padding-left: 20px;">
+								<c:forEach var="j" begin="${1}" end="${fn:length(pt.children)}">
+									<c:set var="subpt" value="${pt.children[j-1]}"/>
+									<li><label class="checkbox-label"><input type="checkbox"  
+									id="pt${subpt.id}" value="${subpt.name}, ${subpt.id}, pt${subpt.id }"
+									name="${pt.name}s" onchange="filterBy('Property Type', '${subpt.name}', '${subpt.id}', 'pt${subpt.id }');"/>
+									${subpt.name}</label></li>
+								</c:forEach>	
+							</ul></div>
+						</c:when>
+						<c:otherwise>
+							<label class="checkbox-label"><input id="pt${pt.id}" type="checkbox" value="" 
+							onchange="check_sub_category(this, '${pt.name}s'); 
+							select_parent_and_children(this, '${pt.name}s', filterBy('Property Type', '${pt.name}', '${pt.id}', 'pt${pt.id }'), '${pt.name}')"/>
+							${pt.name}</label>
+						</c:otherwise>
+						</c:choose>
+							
+							
+						</li></ul>
+						</c:if>
+					</c:forEach>			
 				</div>
 			</div>
 		</div>
@@ -234,16 +379,16 @@ button:disabled {
 		<div id="collapse7" class="panel-collapse collapse">
 			<div class="panel-body">
 				<div class="checkbox"
-					id="<%=FilterController.WRITING_STYLE_PARAM_NAME%>">
+					id="<%=GraffitiController.WRITING_STYLE_PARAM_NAME%>">
 					<label class="checkbox-label"><input id="ws1"
 						type="checkbox" value=""
-						onclick="filterBy('<%=FilterController.WRITING_STYLE_SEARCH_DESC%>', 'Inscribed/Scratched', '<%=FilterController.WRITING_STYLE_GRAFFITI_INSCRIBED%>', 'ws1');" />Inscribed/Scratched</label>
+						onclick="filterBy('<%=GraffitiController.WRITING_STYLE_SEARCH_DESC%>', 'Inscribed/Scratched', '<%=GraffitiController.WRITING_STYLE_GRAFFITI_INSCRIBED%>', 'ws1');" />Inscribed/Scratched</label>
 					<label class="checkbox-label"><input id="ws2"
 						type="checkbox" value=""
-						onclick="filterBy('<%=FilterController.WRITING_STYLE_SEARCH_DESC%>', 'charcoal', 'charcoal', 'ws2');" />Charcoal</label>
+						onclick="filterBy('<%=GraffitiController.WRITING_STYLE_SEARCH_DESC%>', 'charcoal', 'charcoal', 'ws2');" />Charcoal</label>
 					<label class="checkbox-label"><input id="ws3"
 						type="checkbox" value=""
-						onclick="filterBy('<%=FilterController.WRITING_STYLE_SEARCH_DESC%>', 'other', 'other', 'ws3');" />Other</label>
+						onclick="filterBy('<%=GraffitiController.WRITING_STYLE_SEARCH_DESC%>', 'other', 'other', 'ws3');" />Other</label>
 				</div>
 			</div>
 		</div>
@@ -286,9 +431,21 @@ button:disabled {
 					<input id="keyword" type="text" class="form-control"
 						style="border-radius: 4px; margin-bottom: 3px;" />
 					<button class="btn btn-default btn-custom"
-						onclick="contentSearch();" style="float: left;">Content</button>
+						onclick="contentSearch();" style="float: left;"
+						data-toggle="tooltip" data-placement="bottom"
+						title="Perform a search based only on the text of the graffiti">Text</button>
 					<button class="btn btn-default btn-custom"
-						onclick="globalSearch();" style="float: right;">Global</button>
+						onclick="cilSearch();" style="float: left;"
+						data-toggle="tooltip" data-placement="bottom"
+						title="Perform a search based only on the CIL number">CIL</button>
+					<button class="btn btn-default btn-keyboard"
+						onclick="globalSearch();"
+						style="float: center; margin-bottom: 3px; margin-top: 3px" data-toggle="tooltip"
+						data-placement="bottom"
+						title="Perform a search based on all data fields">Global</button>
+					<a href="#popupButton" role="button"
+						class="btn btn-default btn-keyboard" data-toggle="modal-popover"
+						data-placement="bottom">Greek Alphabet</a>
 				</div>
 			</div>
 		</div>
@@ -302,4 +459,49 @@ button:disabled {
 		}
 	%>
 </div>
+
+<script type="text/javascript">
+	function createButton(i) {
+		var textBox = document.getElementById("keyword");
+		var v = document.createElement("input");
+		v.type = "button";
+		v.value = String.fromCharCode(i);
+		v.addEventListener("click", function(event) {
+			textBox.value += this.value;
+		});
+		document.getElementById("greekKeys").appendChild(v);
+	}
+
+	// Create the keyboard buttons
+	window.onload = function() {
+		checkboxesAfterBack();
+
+		<c:if test="${not empty sessionScope.returnFromEDR}">
+		document.getElementById("${sessionScope.returnFromEDR}")
+				.scrollIntoView();
+		<c:set var="returnFromEDR" value="" scope="session" />
+		</c:if>
+
+		var brCount = 1;
+
+		for (var i = 945; i < 962; i++) {
+			createButton(i);
+			if (brCount == 8) {
+				var brTag = document.createElement("br");
+				document.getElementById("greekKeys").appendChild(brTag);
+				brCount = 0;
+			}
+			brCount++;
+		}
+		for (var i = 963; i < 970; i++) {
+			createButton(i);
+			if (brCount == 8) {
+				var brTag = document.createElement("br");
+				document.getElementById("greekKeys").appendChild(brTag);
+				brCount = 0;
+			}
+			brCount++;
+		}
+	}
+</script>
 
