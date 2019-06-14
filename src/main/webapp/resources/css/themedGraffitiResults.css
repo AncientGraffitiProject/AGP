@@ -1,0 +1,88 @@
+@charset "UTF-8";
+@media only screen and (max-width: 1023px) { 
+ 	[class*="col"] { 
+ 		width: 100%; 
+ 	} 
+} 
+
+ th {
+ 	text-align: center !important;
+} 
+
+.center {
+ 	text-align: center;
+ 	font-weight: bold;
+ 	vertical-align: middle !important;
+ 	color: #404040;
+} 
+
+/*
+ tr:nth-child(even) {
+ 	background-color: #ffdeb3; 
+} 
+
+ tr:nth-child(odd) {
+ 	background-color: #fff4e6; 
+}
+
+#header { 
+ 	background-color: #ffdeb3;
+} 
+
+table, td, th{ 
+ 	border: 1px solid black !important;
+}
+*/
+
+.tabify {
+ 	margin-left: 20pt;
+}
+
+.graffitoImg {
+ 	border: 2px solid black;
+ 	display: block;
+ 	margin-left: auto;
+ 	margin-right: auto;
+ 	margin-bottom: 8px;
+ 	padding: 1px;
+ 	height: 125px;
+ 	width:125px;
+ 	line-height: 55px;
+ 	text-align: center;
+}
+
+#learnMore { 
+    border: 2px solid #CE8177;
+    border-radius: 5px;
+	padding: 4px 7px;
+ 	text-shadow: 0 1px 0 #222;
+ 	color: #ffffff;
+ 	background-color: #900000;
+ 	text-decoration: none;
+ 	white-space: nowrap;
+ 	overflow: hidden;
+}
+
+ #learnMore:hover {
+ 	color: black;
+}
+
+#nestedCommentary {
+ 	height: 125px;
+ 	border: 0px solid black !important;
+}
+
+#nestedLink {
+ 	padding: 0px;
+ 	text-align:right;
+ 	border: 0px solid black !important;
+}
+
+#nestedTable {
+	background:transparent !important;
+ 	border: 0px solid black !important;
+} 
+
+#nestedRow { 
+ 	background: transparent !important; 
+}

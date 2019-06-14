@@ -1,0 +1,92 @@
+@charset "UTF-8";
+
+#map {
+	height: 500px;
+	width: 800px;
+}
+
+.labelClass{
+  white-space:nowrap;
+  color: gray;
+  font-size: 10pt;
+}
+
+.labelClassInsula{
+  white-space:nowrap;
+  color: gray;
+  font-size: 14pt;
+}
+
+.labelClassHerculaneum{
+  white-space:nowrap;
+  color: gray;
+  font-size: 14pt;
+}
+
+a.leaflet-control-zoom-in,a.leaflet-control-zoom-out,.leaflet-bar a.leaflet-disabled{
+	background:transparent;
+}
+
+.mapdiv {
+	height: 500px;
+	width: 700px;
+	position:absolute;
+	margin-left:auto;
+	float: left;
+}
+
+#search_info {
+	margin-left: 730px; 
+	width: 400px;
+}
+
+.propertyMetadataMap {
+	width: 300px;
+	position: absolute;
+	margin-left: 500px;
+	border: 3px solid #800000;
+	height:250px;
+}
+
+.searchResultsHerculaneum {
+	height:250px;
+	width:300px;
+	margin-top:10px;
+	margin-left:715px;
+	float:right;
+	border: 3px solid #800000;
+	position:absolute;
+}
+
+.searchResultsPompeii {
+	height:300px;
+	width:300px;
+	margin-top:270px;
+	margin-left:715px;
+	float:right;
+	border: 3px solid #800000;
+	position:absolute;
+}
+
+
+.findspotMap{
+	height:400px;
+	width:500px;
+	float:right;
+	/* position:relative; */
+	position:absolute;
+	border: 3px solid #800000;
+}
+
+/* Used in ? */
+
+.info h4 {
+	margin: 0 0 5px;
+	 color: #777; 
+	
+}
+
+#moreInfo {
+	height: 0px;
+	width:200px;
+}

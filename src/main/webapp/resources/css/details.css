@@ -1,0 +1,170 @@
+@CHARSET "UTF-8";
+
+/*
+Style sheet for the details page. Also accessed by several other pages regularily: rename?
+*/
+
+* {
+	box-sizing: border-box;
+}
+
+/*Used in details.jsp for buttons(format?)*/
+.right-align {
+	float: right;
+}
+
+/*Used in details.jsp for a class(what is on left side). Also used in multiple other files as duplicates(forparams, pethtml, etc)*/
+.leftcol {
+	margin-top: 0px;
+	float: left;
+	width: 50%;
+	margin-bottom: 15px;
+	padding-bottom: 20px;
+	padding-right: 5px;
+	padding-left: 15px;
+}
+
+/*Used in details.jsp for a class(what is on left side). Also used in multiple other files as duplicates(forparams, pethtml, etc)*/
+.rightcol {
+	margin-top: 0px;
+	float: right;
+	width: 50%;
+	margin-bottom: 15px;
+	padding-bottom: 20px;
+	padding-right: 15px;
+	padding-left: 5px;
+	/* background-color: grey; */
+}
+
+/*Used in details.css, moregraffitiinformation.jsp,index.jsp,and details.jsp. Formats images(?), move to main.css?*/
+.fluid-img {
+	display: block;
+	margin-right: auto;
+	margin-left: auto;
+	max-width: 100%;
+	height: auto;
+	padding-bottom: 15px;
+}
+
+/*Used in many, many places. Does not belong in a file named details.css(?)*/
+.propertyLabel {
+	text-align: right;
+}
+
+th, td {
+	padding: 5px;
+	max-width: 600px;
+}
+
+/*Used in moreGraffitoInformation.jsp and details.jsp. I think what's used in information is separate(duplicate?), within the style tags of that file itself. */
+.top-div {
+	padding-left: 15px;
+}
+/*Used in details.css. Also used in moreGraffitoInformation.jsp (added in from details.css/copied, consider renaming this page) */
+.graffiti_content {
+	max-width: 400px;
+    height: auto;
+    margin: 10px;
+    padding: 10px;
+    position: relative;
+}
+
+h3 {
+	font-size: 28px;
+	margin: -10px 0px 10px 0px;
+}
+
+h5 {
+	font-size: 20px;
+}
+
+h6 {
+	font-style: italic;/*Used in details.jsp for a class(what is on left side). Also used in multiple other files as duplicates(forparams, pethtml, etc)*/
+	font-size: 16px;
+	margin: -10px 0px 10px 0px;
+}
+
+/*Used in moreGraffitoInformation.jsp in one of the largest div classes. Used in details.jsp in the same way.*/
+.detail-body {
+	max-width: 500px;
+}
+
+/*Appears to be used in propertyInfo.jsp(shouldn't be in this css file?), strange syntax(class="property-table table-striped">) */
+.property-table {
+	max-width: 65%;
+	float: left;
+}
+
+/*Used in ?, element not class*/
+th {
+	vertical-align: top;
+	width: 180px;
+}
+
+/*Used in ?*/
+@media only screen and (max-width: 850px) {
+	[class*="col"]{
+		width: 100%;
+	}
+	[id*="headerMap"]{
+		display: none;
+	}
+}
+/*Used in */
+input[name="image"] {
+	display: none;
+}
+
+/*Used in details.jsp and moreGraffitoInformation.jsp. Appears to be somehow inherited by resultsList.jsp because I cannot find any clear references to button name.  */
+.buttons {
+	max-width: 100%;
+	height: auto;
+	margin: 0 auto;
+}
+
+/*Used in */
+img {
+	display: block;
+	margin: 0px;
+	padding: 0px;
+}
+
+/*Used in moreGraffitoInformation.jsp and details.jsp*/
+#imgSrc {
+	display: block;
+	max-width: 100%;
+	margin: 0 auto;
+}
+
+/*Used in */
+input[name="image"]:checked+label {
+	border-color: #666;
+	opacity: 1;
+}
+
+/*Used in */
+label {
+	border: 3px solid #999;
+	float: left;
+	cursor: pointer;
+	opacity: 0.6;
+	max-width: 100%;
+	height: auto;
+}
+
+/*Used in propertyInfo.jsp from this page, moreGraffitoInformation.jsp, details.jsp. */
+.button_bar {
+	padding: 0px 30px 50px;
+}
+
+/*Used in  moreGraffitoInformation.jsp and details.jsp in two places each.*/
+.thumb {
+	height: 100px;
+}
+
+/*Used in ?*/
+@media only screen and (max-width: 550px) {
+	[class="thumb"]{
+		height: 45px;
+	}
+}
