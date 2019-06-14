@@ -4,17 +4,13 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page import="java.util.*"%>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<link href="<c:url value="/resources/css/proj.css" />" type="text/css"
-	rel="stylesheet">
 <title>Ancient Graffiti Project :: Search Results</title>
 <%@include file="../../resources/common_head.txt"%>
 <script type="text/javascript"
 	src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.js"></script>
-<script type="text/javascript"
-	src="<c:url value="/resources/js/jquery.imagemapster.js" />"></script>
 <script type="text/javascript">
 	function selectImg(ind, k, shortId, longId) {
 		if (ind == 1) {
@@ -44,6 +40,8 @@
 		</p>
 		<%@ include file="resultsList.jsp"%>
 	</div>
+	
+	<%@include file="footer.jsp" %>
 </body>
 
 </html>
