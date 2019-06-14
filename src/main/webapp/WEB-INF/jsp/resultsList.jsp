@@ -1,13 +1,17 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%
 	/* Used by the filter and stable URIs to display results */
+	session.setAttribute("filteredList", request.getAttribute("resultsLyst"));
 %>
+
 <c:forEach var="i" items="${resultsLyst}" varStatus="graffitoIndex">
 	<h4 id="${i.edrId }">
 		<c:choose>
-			<c:when test="${not empty i.agp.summary }">
-				<c:out value="${i.agp.summary }" />
+			<c:when test="${not empty i.agp.caption }">
+				<c:out value="${i.agp.caption }" />
 			</c:when>
 			<c:otherwise>
 		Graffito
@@ -20,7 +24,7 @@
 			<c:when test="${not empty i.contentWithLineBreaks}">
 				<tr>
 					<th class="propertyLabel">Graffito:</th>
-					<td>${i.contentWithLineBreaks}
+					<td><p>${i.contentWithLineBreaks}</p></td>
 				</tr>
 				<c:if test="${not empty i.agp.contentTranslation}">
 					<tr>
@@ -42,9 +46,9 @@
 				</c:if>
 			</c:otherwise>
 		</c:choose>
-		<c:if test="${i.numberOfImages > 0}">
-			<c:set var="len" value="${i.numberOfImages}" />
-			<c:set var="images" value="${i.images }" />
+		<c:if test="${fn:length(i.photos) gt 0}">
+			<c:set var="len" value="${fn:length(i.photos)}" />
+			<c:set var="images" value="${i.images}" />
 			<c:set var="thumbnails" value="${i.thumbnails}" />
 			<c:set var="pages" value="${i.pages}" />
 
@@ -52,13 +56,13 @@
 				<c:when test="${len == 1}">
 					<tr>
 						<td colspan="2"><a target="_blank" href="${pages[0]}"><img
-								style="display: block; float: center; margin-left: auto; margin-right: auto;"
+								style="display: block; margin-left: auto; margin-right: auto;"
 								class="thumbnail" src="${thumbnails[0]}" /></a></td>
 					</tr>
 				</c:when>
 				<c:otherwise>
 					<c:set var="k" value="${i.edrId}" />
-				
+
 					<tr>
 						<td colspan="2"><a target="_blank" href="${pages[0]}"
 							id="imgLink${k}"><img class="thumbnail"
@@ -83,13 +87,21 @@
 			<td><a
 				href="http://pleiades.stoa.org/places/${i.agp.property.insula.city.pleiadesId}">${i.ancientCity}</a></td>
 		</tr>
-		<tr>
-			<th class="propertyLabel">Findspot:</th>
-			<td><a
-				href="<%=request.getContextPath() %>/results?property=${i.agp.property.id}">${i.agp.property.propertyName}
-					(${i.agp.property.insula.shortName}.${i.agp.property.propertyNumber})</a>
-			</td>
-		</tr>
+		<c:if test="${i.ancientCity != 'Smyrna'}">
+			<tr>
+				<th class="propertyLabel">Findspot:</th>
+				<td><a
+					href="<%=request.getContextPath() %>/results?property=${i.agp.property.id}">${i.agp.property.propertyName}
+						(${i.agp.property.insula.shortName}.${i.agp.property.propertyNumber})</a>
+				</td>
+			</tr>
+		</c:if>
+		<c:if test="${not empty i.agp.cil}">
+			<tr>
+				<th><span class="propertyLabel">CIL:</span></th>
+				<td>${i.agp.cil}</td>
+			</tr>
+		</c:if>
 		<c:if test="${i.agp.figuralInfo.getDrawingTags().size() > 0}">
 			<tr>
 				<c:choose>
@@ -100,26 +112,27 @@
 						<th class="propertyLabel">Drawing Categories:</th>
 					</c:otherwise>
 				</c:choose>
-				<td><c:forEach var="dt"
+				<td>
+				<c:forEach var="dt"
 						items="${i.agp.figuralInfo.getDrawingTags()}"
 						varStatus="loopStatus">
 						<a href="<%=request.getContextPath() %>/results?drawing=${dt.id}">${dt.name}</a>
 						<c:if test="${!loopStatus.last}">, </c:if>
-					</c:forEach></td>
+					</c:forEach>
+					</td>
 			</tr>
 		</c:if>
 		<tr style="line-height: 30px;">
 			<td><a
 				href="<%=request.getContextPath() %>/graffito/AGP-${i.edrId}"
-				id="${i.edrId}"> See more information
-					&#10140;</a></td>
+				id="${i.edrId}"> See more information &#10140;</a></td>
 		</tr>
 
 		<%
 			if (session.getAttribute("authenticated") != null) {
 		%>
 		<tr>
-			<td colspan="2" align="center">
+			<td colspan="2">
 				<form action="<%=request.getContextPath()%>/admin/updateGraffito">
 					<input class="btn btn-agp" type=submit value="Edit Graffito"><input
 						type="hidden" name="edrID" value="${i.edrId}" />
@@ -131,5 +144,5 @@
 		%>
 	</table>
 	<hr class="main-table" />
-	
+
 </c:forEach>
