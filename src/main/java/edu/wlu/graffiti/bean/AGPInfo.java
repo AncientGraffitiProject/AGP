@@ -6,6 +6,8 @@
  */
 package edu.wlu.graffiti.bean;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -16,7 +18,7 @@ public class AGPInfo implements Comparable<AGPInfo> {
 	private String edrId;
 	private String commentary;
 	private String contentTranslation;
-	private String summary;
+	private String caption;
 	private String writingStyleInEnglish;
 	private String languageInEnglish;
 	private Property property;
@@ -35,7 +37,9 @@ public class AGPInfo implements Comparable<AGPInfo> {
 	private boolean hasFiguralComponent = false;
 	private boolean isGreatestHitTranslation = false;
 	private boolean isGreatestHitFigural = false;
+	private boolean isThemed = false;
 	private GreatestHitsInfo ghInfo;
+	private List<Theme> themes;
 
 	public AGPInfo() {
 
@@ -59,8 +63,23 @@ public class AGPInfo implements Comparable<AGPInfo> {
 		return "AGP-" + edrId;
 	}
 
-	public String getSummary() {
-		return summary;
+	/**
+	 * @return the isThemed
+	 */
+	@JsonIgnore
+	public boolean isThemed() {
+		return isThemed;
+	}
+
+	/**
+	 * @param isThemed the isThemed to set
+	 */
+	public void setThemed(boolean isThemed) {
+		this.isThemed = isThemed;
+	}
+	
+	public String getCaption() {
+		return caption;
 	}
 
 	public String getCommentary() {
@@ -154,8 +173,8 @@ public class AGPInfo implements Comparable<AGPInfo> {
 		this.edrId = edrId;
 	}
 
-	public void setSummary(String summary) {
-		this.summary = summary;
+	public void setCaption(String caption) {
+		this.caption = caption;
 	}
 
 	public void setCommentary(String commentary) {
@@ -321,6 +340,12 @@ public class AGPInfo implements Comparable<AGPInfo> {
 		this.epidoc = epidoc;
 	}
 
+	@JsonIgnore
+	public String getEpidocWithLineBreaks() {
+		// remove all \r chars and add \n chars at every tag beginning 
+		return epidoc.replaceAll("\r", "").replaceAll("<", "\n<").trim();
+	}
+	
 	/**
 	 * @return the height_from_ground
 	 */
@@ -365,6 +390,22 @@ public class AGPInfo implements Comparable<AGPInfo> {
 	 */
 	public void setProperty(Property property) {
 		this.property = property;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setThemes(List<Theme> themes) {
+		this.themes = themes;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	@JsonIgnore
+	public List<Theme> getThemes() {
+		return themes;
 	}
 
 }

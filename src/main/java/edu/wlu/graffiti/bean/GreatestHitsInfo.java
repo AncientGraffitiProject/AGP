@@ -7,13 +7,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Stores information about the graffiti that are greatest hits
+ * 
  * @author sprenkle
  *
  */
 public class GreatestHitsInfo {
 
-	private String commentary="";
-	private String preferredImage="";
+	private String commentary = "";
+	private String preferredImage = "";
+
 	/**
 	 * @return the commentary
 	 */
@@ -21,12 +23,14 @@ public class GreatestHitsInfo {
 	public String getCommentary() {
 		return commentary;
 	}
+
 	/**
 	 * @param commentary the commentary to set
 	 */
 	public void setCommentary(String commentary) {
 		this.commentary = commentary;
 	}
+
 	/**
 	 * @return the preferredImage
 	 */
@@ -34,11 +38,16 @@ public class GreatestHitsInfo {
 	public String getPreferredImage() {
 		return preferredImage;
 	}
+
 	/**
 	 * @param preferredImage the preferredImage to set
 	 */
 	public void setPreferredImage(String preferredImage) {
+		if (preferredImage != null && !preferredImage.equals("")) {
+			while (preferredImage.length() < 6) {
+				preferredImage = "0" + preferredImage;
+			}
+		}
 		this.preferredImage = preferredImage;
 	}
-	
 }

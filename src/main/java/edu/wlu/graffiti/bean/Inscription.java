@@ -3,11 +3,15 @@
  */
 package edu.wlu.graffiti.bean;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.text.StringEscapeUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Inscription implements Comparable<Inscription> {
 
@@ -27,11 +31,12 @@ public class Inscription implements Comparable<Inscription> {
 	private String writingStyle;
 	private String apparatus;
 	private String apparatusDisplay;
-	private int numberOfImages;
-	private int startImageId;
-	private int stopImageId;
+	private List<Photo> photos;
 	private AGPInfo agp;
 	private String edrFindSpot;
+	private String dateBeginning;
+	private String dateEnd;
+	private String dateExplanation;
 
 	public Inscription() {
 		
@@ -44,6 +49,24 @@ public class Inscription implements Comparable<Inscription> {
 
 	public void setId(final int id) {
 		this.id = id;
+	}
+	
+	@JsonIgnore
+	public String getDateBeginning() {
+		return this.dateBeginning;
+	}
+
+	public void setDateBeginning(final String date) {
+		this.dateBeginning = date;
+	}
+	
+	@JsonIgnore
+	public String getDateEnd() {
+		return this.dateEnd;
+	}
+
+	public void setDateEnd(final String date) {
+		this.dateEnd = date;
 	}
 
 	@JsonIgnore
@@ -94,21 +117,21 @@ public class Inscription implements Comparable<Inscription> {
 	// send to map.jsp in order to highlight the map
 	// highlighting properties --> Just need to use the property id?
 	@JsonIgnore
-	public String getSpotKey() {
+	public int getSpotKey() {
 		if (getFindSpot() != null) { // TODO do we need to check this? when will
 										// an inscription not have a findspot?
-			return "p" + String.valueOf(agp.getProperty().getId());
+			return agp.getProperty().getId();
 		}
-		return "";
+		return -1;
 	}
 
 	// highlighting insula
 	@JsonIgnore
-	public String getGenSpotKey() {
-		if (getSpotKey() != "") { // TODO do we need to check this?
-			return "i" + String.valueOf(agp.getProperty().getInsula().getId());
+	public int getGenSpotKey() {
+		if (getSpotKey() != -1) { // TODO do we need to check this?
+			return agp.getProperty().getInsula().getId();
 		}
-		return "";
+		return 0;
 	}
 
 	public void setFindSpot(final String findSpot) {
@@ -202,15 +225,6 @@ public class Inscription implements Comparable<Inscription> {
 		this.apparatusDisplay = apparatusDisplay;
 	}
 
-	@JsonIgnore
-	public int getNumberOfImages() {
-		return this.numberOfImages;
-	}
-
-	public void setNumberOfImages(final int num) {
-		this.numberOfImages = num;
-	}
-
 	public AGPInfo getAgp() {
 		return agp;
 	}
@@ -252,41 +266,9 @@ public class Inscription implements Comparable<Inscription> {
 	}
 
 	/**
-	 * @return the startImageId
-	 */
-	@JsonIgnore
-	public int getStartImageId() {
-		return startImageId;
-	}
-
-	/**
-	 * @param startImageId
-	 *            the startImageId to set
-	 */
-	public void setStartImageId(int startImageId) {
-		this.startImageId = startImageId;
-	}
-
-	/**
-	 * @return the stopImageId
-	 */
-	@JsonIgnore
-	public int getStopImageId() {
-		return stopImageId;
-	}
-
-	/**
-	 * @param stopImageId
-	 *            the stopImageId to set
-	 */
-	public void setStopImageId(int stopImageId) {
-		this.stopImageId = stopImageId;
-	}
-
-	/**
 	 * 
 	 * @return the list of EDR image URLs
-	 */
+	 *
 	@JsonIgnore
 	public List<String> getImages() {
 		int numImages = this.getNumberOfImages();
@@ -305,11 +287,28 @@ public class Inscription implements Comparable<Inscription> {
 		}
 		return imageList;
 	}
-
+	*/
+	
+	/**
+	 * 
+	 * @return the list of EDR image URLs
+	 */
+	@JsonIgnore
+	public List<String> getImages() {
+		List<String> imageList = new ArrayList<String>();
+		//String id = this.getEdrId();
+		for(Photo p : photos) {
+			//imageList.add(BASE_EDR_PHOTO_URL + id.substring(3, 6) + "/" + p.getPhotoId() + ".jpg");
+			imageList.add(BASE_EDR_PHOTO_URL + getEdrDirectory() + "/" + p.getPhotoId() + ".jpg");
+		}
+		//System.out.println("Images: " + imageList);
+		return imageList;
+	}
+	
 	/**
 	 * 
 	 * @return the list of the image page links on the EDR site
-	 */
+	 *
 	@JsonIgnore
 	public List<String> getPages() {
 		int numImages = this.getNumberOfImages();
@@ -327,12 +326,27 @@ public class Inscription implements Comparable<Inscription> {
 		}
 		return pageList;
 	}
+	*/
+	
+	/**
+	 * 
+	 * @return the list of the image page links on the EDR site
+	 */
+	@JsonIgnore
+	public List<String> getPages() {
+		List<String> pageList = new ArrayList<String>();
+		for(Photo p : this.photos) {
+			pageList.add(BASE_EDR_IMAGE_PAGE_URL + p.getPhotoId());
+		}
+		//System.out.println("Pages: " + pageList);
+		return pageList;
+	}
 
 	/**
 	 * 
 	 * @return the list of image thumbnail urls
 	 * 
-	 */
+	 *
 	@JsonIgnore
 	public List<String> getThumbnails() {
 		int numImages = getNumberOfImages();
@@ -351,5 +365,85 @@ public class Inscription implements Comparable<Inscription> {
 		}
 		return imageList;
 	}
+	*/
+	
+	/**
+	 * 
+	 * @return the list of image thumbnail urls
+	 * 
+	 */
+	@JsonIgnore
+	public List<String> getThumbnails() {
+		List<String> imageList = new ArrayList<String>();
+		//String id = getEdrId();
+		for(Photo p : photos) {
+			imageList.add(BASE_EDR_THUMBNAIL_PHOTO_URL + getEdrDirectory() + "/th_" + p.getPhotoId() + ".jpg");
+		}
+		//System.out.println("Thumbnails: " + imageList);
+		return imageList;
+	}
+	
+	/**
+	 * @return the citation for the graffito page in AGP
+	 */
+	public String getCitation() {
+		String title = agp.getCaption();
+		if(title == null)
+			title = "Graffito";
+		
+		DateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy");
+		Date date = new Date();
+		String dateString = dateFormat.format(date);
+		
+		return "AGP-"+edrId+", <i>The Ancient Graffiti Project</i>, &lt;http://ancientgraffiti.org/Graffiti/graffito/AGP-"+edrId+"&gt; [accessed: "+dateString+"]";
+	}
+	
+	/**
+	 * @return the photos
+	 */
+	public List<Photo> getPhotos() {
+		return photos;
+	}
 
+	/**
+	 * @param photos the photos to set
+	 */
+	public void setPhotos(List<Photo> photos) {
+		this.photos = photos;
+	}
+	
+	/**
+	 * @param myContent the content to pre-process
+	 * @return myContent html characters converted to unicode
+	 */
+	public String getPreprocessedContent(String myContent) {
+		if(myContent != null)
+			return StringEscapeUtils.unescapeHtml4(myContent);
+		
+		return null;
+	}
+	
+	/**
+	 * @return the dataExplanation
+	 */
+	@JsonIgnore
+	public String getDateExplanation() {
+		return dateExplanation;
+	}
+
+	/**
+	 * @param dataExplanation the dataExplanation to set
+	 */
+	public void setDateExplanation(String dateExplanation) {
+		this.dateExplanation = dateExplanation;
+	}
+	
+	public String getEdrDirectory() {
+		String dir = this.edrId.substring(3,6);
+		int i = 0;
+		while (dir.charAt(i) == '0') {
+			i++;
+		}
+		return dir.substring(i);
+	}
 }
