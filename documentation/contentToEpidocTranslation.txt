@@ -1,0 +1,418 @@
+Author: Trevor Stalnaker
+File: contentToEpidocTranslation.txt
+
+Translating From Content to Epidoc:
+
+    - All these methods are found in ImportEDRData.java
+
+    - transformContentToEpidoc(content) is responsible for calling them
+
+    - The translated content is saved to the database in content_epidocified in the agp_inscription_info table
+
+    - Nearly all of these methods use regular expressions to parse through the content
+
+    - Note: If any changes are made to the epidoc generation in ImportEDRData, they will not be visible until the database is also updated
+
+    	- Work Around: If you want to see results in real time, there is a commented out line in GenerateEpidoc.java that bypasses this step and 'hotwires' the generation 
+
+    		- This code is currently at line 426 (will definitely not remain constant)
+
+    - Preparing the Content for Epidocification:
+
+    	- Normalize Characters:
+
+    		- Some of the characters that we get from EDR and the database cause problems during parsing
+
+    		- To avoid this we take steps to normalize them before epidocification begins
+
+    		- The Normalize Method:
+
+    			- Unescape HTML4:
+
+    				-First we convert all characters from their HTML encoding to a form which java understands
+
+    					- Example - Underline Character:
+
+    						- HTML Entity: &#818;
+
+    						- Equivalent Java: \u0332
+
+    					- Example - Carot Character:
+
+    						- HTML Entity: &#770;
+
+    						- Equivalent Java: \u0302
+
+    			- TranslateUnicode (formerly translateDots):
+
+    				- Some characters from EDR and database are specific unicode characters
+
+    					- This makes them harder to locate with regular expressions
+
+    				- Builds a map that converts from unicode to combinational characters
+
+    				- Then does the necessary conversions
+
+    				- Example:
+
+    					- Unicode: Ạ
+
+    					- Combinational Character: A\u0323
+    				- Example:
+
+    					- Unicode: â
+
+    					- Combinational Character: a\u0302
+
+    			- Angle Brackets:
+
+    				- Replaces angle brackets in the original content with their respective html entities
+
+    					- If we leave the brackets they cause the epidoc generator to crash when the user tries an export
+
+    					- By replacing them, they still print, but they aren't mistaken for xml tags
+
+    				- The two flavors of angle bracket
+
+    					- There are two distinct angle bracket pairs found in our content
+
+    						- <> and〈〉
+
+   							- Both types are converted to &#60; and &#62; respectively
+
+    - Conventions:
+
+    	- Figural Convention:
+
+    		- In Content: ((:abc))
+
+    		- Method: markContentWithFigureTags(content)
+
+    		- In Epidoc: <figure><figDesc>abc</figDesc></figure>
+
+    	- Abbreviation Conventions:
+
+    		- Standard:
+
+    			- In Content: ab(c)
+
+    			- Method: addAbbreviationTags(content)
+
+    			- In Epidoc: <expan><abbr>ab</abbr><ex>c</ex></expan>
+
+    		- Uncertain:
+
+    			- In Content: ab(c?)
+
+    			- Method: addAbbreviationTagsWithUncertainty(content)
+
+    			- In Epidoc: <expan><abbr>ab</abbr><ex cert="low">c</ex></expan>
+
+    		- Unknown:
+
+    			- In Content: ab(---)
+
+    			- Method: addUnknownAbbreviationTags(content)
+
+    			- In Epidoc: <abbr>ab</abbr>
+
+    	- Lost Content Conventions:
+
+    		- Lost Lines:
+    			
+    			- Extent Unknown:
+
+    				- In Content: - - - - - -
+
+    				- Method: addLostLines(content)
+
+    				- In Epidoc: <gap reason="lost" extent="unknown" unit="line/">
+    				
+    			- Extent Known
+    			    - In Content: [------] or [ - - - - - - ]
+
+    				- Method: addLostLinesExtentKnown(content)
+
+    				- In Epidoc: <gap reason=”lost” extent=”1” unit=”line”/>
+
+    		- Lost Characters:
+
+    			- Extent Unknown:
+
+    				- In Content: [---] or [- - -]
+
+    				- Method: addLostContentTags(content) {formerly}
+
+    				- In Epidoc: <gap reason="lost" extent="unknown" unit="character"/>
+
+    			- Certain:
+
+    				- In Content: [•] or [••] {formerly: [-] or [--]}
+
+    				- Method: addLostCharactersNumberCertain(content) {formerly}
+
+    				- In Epidoc: <gap reason="lost" quantity="1" unit="character"/>
+
+    			- Uncertain:
+
+    				- In Content: [+4?+]
+
+    				- Method: addLostCharactersNumerUncertain(content) {formerly}
+
+    				- In Epidoc: <gap reason="lost" quantity="4" unit="character" precision="low"/>
+
+    		- Once Present Now Erased:
+
+    			- Standard:
+
+    				- In Content: [abc]
+
+    				- Method: addOncePresentButNowErasedTags(content) {formerly}
+
+    				- In Epidoc: <supplied reason="lost">abc</supplied>
+
+    			- Uncertain:
+
+    				- In Content [abc?]
+
+    				- Method: addUncertainOncePresentButNowErasedTags(content) {formerly}
+
+    				- In Epidoc: <supplied reason="lost" cert="low">abc</supplied>
+
+    `		- Intentionally Erased:
+
+    			- In Content: [[abc]] or 〚abc〛
+
+    			- Method: addIntentionallyErasedTags(content)
+
+    			- In Epidoc: <del rend="erasure"><supplied reason="lost">abc</supplied></del>
+
+    		- Handling a Combination of the Above:
+
+    			- This method handles all of the above that only have single square brackets, i.e. []
+
+    			- Method: addSquareBrackets(content)
+
+    			- Note: spaces within the brackets are tagged as lost as well
+
+    			- Example One:
+
+    				- In Content: [--- abc]
+
+    				- In Epidoc: <gap reason="lost" extent="unknown" unit="character"/><supplied reason="lost"> abc</supplied>
+
+    			- Example Two:
+
+    				- In Content: [--- abc?]
+
+    				- In Epidoc: <gap reason="lost" extent="unknown" unit="character"/><supplied reason="lost" cert="low"> abc</supplied>
+    
+    			- Example Three:
+
+    				- In Content: [+4?+ abc ---]
+
+    				- In Epidoc: <gap reason="lost" quantity="4" unit="character" precision="low"/>
+    							 <supplied reason="lost"> abc </supplied>
+    							 <gap reason="lost" extent="unknown" unit="character"/>
+
+    	- Non-Standard Spellings:
+
+    		- Standard:
+
+    			- In Content: abd (:abc)
+
+    			- Method: addNonStandardSpellings(content)
+
+    			- In Epidoc: <choice><reg>abc</reg><orig>abd</orig></choice>
+
+    		- Uncertain:
+
+    			- In Content: abd (:abc?)
+
+    			- Method: addUncertainNonStandardSpellings(content)
+
+    			- In Epidoc: <choice><reg cert="low">abc</reg><orig>abd</orig></choice>
+
+    	- Illegible Characters:
+
+    		- In Content: +
+
+    		- Method: addIllegibleCharacters(content)
+
+    		- In Epidoc: <gap reason="illegible" quantity="1" unit="character"/>
+
+    	- Letters Joined in Ligature:
+
+    		- In Content: âbc
+
+    		- Method: addLettersJoinedInLigature(content)
+
+    		- In Epidoc: <hi rend="ligature">ab</hi>c
+
+    	- Once Visible Now Missing Characters:
+
+    		- In Content: abc
+
+    		- Method: addOnceVisibleNowMissingCharacters(content)
+
+    		- In Epidoc: <supplied reason="undefined" evidence="previouseditor">abc</supplied>
+
+    	- Damaged Characters:
+
+    		- In Content: ạḅ
+
+    		- Method: addDamagedCharacters(content)
+
+    		- In Epidoc: <unclear>ab</unclear>
+
+    	- Surplus Characters:
+
+    		- In Content: {abc}
+
+    		- Method: addSurplusCharacters(content)
+
+    		- In Epidoc: <surplus>abc</surplus>
+
+    	- Incomprehensible Characters:
+
+    		- In Content: ABC (excludes Roman Numerals)
+
+    		- Method: addIncomprehensibleCharacters(content)
+
+    		- In Epidoc: <orig>abc<orig>
+
+    	- Illegible Text:
+
+    		- In Content: <:textus non legitur>
+
+    		- Method: addIllegibleText(content)
+
+    		- In Epidoc: <gap reason="illegible" extent="unknown" unit="character"/> 
+    		
+    	- Space Left Intentionally Blank:
+
+    		- In Content: <:vacat>
+
+    		- Method: addBlankSpace(content)
+
+    		- In Epidoc: <space/> 
+
+    	- Text Written Vertically:
+
+    		- In Content: <:ad perpendiculum>
+
+    		- Method: addLBTagsToContent(content)
+
+    		- In Epidoc: <lb n="1" style="text-direction:vertical"/> 
+
+    	- Gap Caused By A Door:
+
+    		- In Content: <:ianua>
+
+    		- Method: addDoorSpace(content)
+
+    		- In Epidoc: <space type="door"/>
+    		
+    	- Subaudible Words:
+
+    		- In Content: <:servus>
+
+   			- Method: addSubaudible(content)
+
+    		- In Epidoc: <supplied reason="subaudible">servus</supplied>
+
+    	- Symbols:
+
+    		- In Content: ((denarius))
+
+    		- Method: addSymbols(content)
+
+    		- In Epidoc: <expan><abbr><am><g type="denarius"/></am></abbr><ex>denarius</ex></expan>
+
+    	- Other Epidoc Markups
+
+    		- Columns
+
+    			- Context: Graffito has more than one column of text
+
+    			- Method: markContentWithColumns(content)
+
+    			- In Epidoc: <div type="textpart" subtype="column" n="a">...</div>
+
+    			- n increases alphabetically for each additional column
+
+    		- New Lines
+
+    			- Context: Graffito has line breaks
+
+    			- Method: addLBTagsToContent(content)
+
+    			- In Epidoc: <lb n="1"/>
+
+    			- n increases numerically for each additional line
+
+    - The Order of Translation
+
+    	- The order in which tags are searched for is extremely important with regards to the Epidoc produced
+
+    	- This determines how tags are nested and how they are broken apart and how we write our regular expressions
+
+    	- Current Order of Translation:
+
+    		1.) Illegible Text
+    		
+    		2.) Intentional Blank Spaces
+    		
+    		3.) Gaps Caused By Doors
+    		
+    		4.) Lost Lines Extent Known
+
+    		5.) Columns
+    		
+    		6.) Line breaks / Vertically Written Text
+    		
+    		7.) Subaudible Words
+
+    		8.) Symbols
+    
+    		9.) Figural
+    		
+    		10.) Non-Standard Spellings
+
+    		11.) Uncertain Non-Standard Spellings
+
+    		12.) Unknown Abbreviation Tags
+
+    		13.) Abbreviation Tags
+
+    		14.) Uncertain Abbreviation Tags
+
+    		15.) Lost Content ([---])  *NO LONGER IN USE*
+
+    		16.) Lost Characters Number Certain  *NO LONGER IN USE*
+
+    		17.) Intentionally Erased
+
+    		18.) Lost Characters Number Uncertain  *NO LONGER IN USE*
+
+    		19.) Once Present Now Erased  *NO LONGER IN USE*
+
+    		20.) Uncertain Once Present Now Erased  *NO LONGER IN USE*
+
+    		21.) Square Brackets (the combinational method)
+
+    		22.) Illegible Characters
+
+    		23.) Incomprehensible Characters
+
+    		24.) Letters Joined in Ligature
+
+    		25.) Lost Lines
+
+    		26.) Once Visible Now Missing Characters
+
+    		27.) Damaged Characters
+
+    		28.) Surplus Characters
+
+

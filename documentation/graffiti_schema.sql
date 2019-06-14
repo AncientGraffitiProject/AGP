@@ -2,17 +2,29 @@
 -- PostgreSQL database dump
 --
 
+-- Dumped from database version 9.5.7
+-- Dumped by pg_dump version 9.5.7
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;\
 SET client_encoding = 'UTF8';
-SET standard_conforming_strings = off;
+SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
-SET escape_string_warning = off;
+SET row_security = off;
 
 --
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
 --
 
-COMMENT ON SCHEMA public IS 'Standard public schema';
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 SET search_path = public, pg_catalog;
@@ -22,26 +34,27 @@ SET search_path = public, pg_catalog;
 --
 
 CREATE SEQUENCE inscription_id_seq
+    START WITH 1
     INCREMENT BY 1
-    NO MAXVALUE
     NO MINVALUE
+    NO MAXVALUE
     CACHE 1;
 
 
-ALTER TABLE public.inscription_id_seq OWNER TO sprenkle;
+ALTER TABLE inscription_id_seq OWNER TO sprenkle;
 
 SET default_tablespace = '';
 
 SET default_with_oids = false;
 
 --
--- Name: agp_inscription_info; Type: TABLE; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: agp_inscription_info; Type: TABLE; Schema: public; Owner: sprenkle
 --
 
 CREATE TABLE agp_inscription_info (
     id integer DEFAULT nextval('inscription_id_seq'::regclass) NOT NULL,
     edr_id character(9),
-    "comment" text,
+    comment text,
     content_translation text,
     lang_in_english character varying(30),
     writing_style_in_english character varying(30),
@@ -55,31 +68,61 @@ CREATE TABLE agp_inscription_info (
     langner character varying(100),
     has_figural_component boolean DEFAULT false,
     individual_letter_heights text,
+    summary character varying(200),
     is_greatest_hit_translation boolean DEFAULT false,
     is_greatest_hit_figural boolean DEFAULT false,
-    epidoc text,
-    letter_with_flourishes_height_min character varying(10), 
- 	letter_with_flourishes_height_max character varying(10)
+    content_epidocified text,
+    letter_with_flourishes_height_min character varying(10),
+    letter_with_flourishes_height_max character varying(10)
 );
 
 
-ALTER TABLE public.agp_inscription_info OWNER TO sprenkle;
+ALTER TABLE agp_inscription_info OWNER TO sprenkle;
+
+--
+-- Name: city_key_sequence; Type: SEQUENCE; Schema: public; Owner: sprenkle
+--
+
+CREATE SEQUENCE city_key_sequence
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE city_key_sequence OWNER TO sprenkle;
+
+--
+-- Name: cities; Type: TABLE; Schema: public; Owner: sprenkle
+--
+
+CREATE TABLE cities (
+    id integer DEFAULT nextval('city_key_sequence'::regclass) NOT NULL,
+    name character varying(100) NOT NULL,
+    description character varying(300),
+    pleiades_id character varying(15) NOT NULL
+);
+
+
+ALTER TABLE cities OWNER TO sprenkle;
 
 --
 -- Name: drawing_tag_id_seq; Type: SEQUENCE; Schema: public; Owner: sprenkle
 --
 
 CREATE SEQUENCE drawing_tag_id_seq
+    START WITH 1
     INCREMENT BY 1
-    NO MAXVALUE
     NO MINVALUE
+    NO MAXVALUE
     CACHE 1;
 
 
-ALTER TABLE public.drawing_tag_id_seq OWNER TO sprenkle;
+ALTER TABLE drawing_tag_id_seq OWNER TO sprenkle;
 
 --
--- Name: drawing_tags; Type: TABLE; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: drawing_tags; Type: TABLE; Schema: public; Owner: sprenkle
 --
 
 CREATE TABLE drawing_tags (
@@ -89,71 +132,72 @@ CREATE TABLE drawing_tags (
 );
 
 
-ALTER TABLE public.drawing_tags OWNER TO sprenkle;
+ALTER TABLE drawing_tags OWNER TO sprenkle;
 
 --
--- Name: eagle_inscription_id_seq; Type: SEQUENCE; Schema: public; Owner: sprenkle
+-- Name: edr_inscription_id_seq; Type: SEQUENCE; Schema: public; Owner: sprenkle
 --
 
-CREATE SEQUENCE eagle_inscription_id_seq
+CREATE SEQUENCE edr_inscription_id_seq
+    START WITH 1
     INCREMENT BY 1
-    NO MAXVALUE
     NO MINVALUE
+    NO MAXVALUE
     CACHE 1;
 
 
-ALTER TABLE public.eagle_inscription_id_seq OWNER TO sprenkle;
+ALTER TABLE edr_inscription_id_seq OWNER TO sprenkle;
 
 --
--- Name: edr_inscriptions; Type: TABLE; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: edr_inscriptions; Type: TABLE; Schema: public; Owner: sprenkle
 --
 
 CREATE TABLE edr_inscriptions (
-    id integer DEFAULT nextval('eagle_inscription_id_seq'::regclass) NOT NULL,
+    id integer DEFAULT nextval('edr_inscription_id_seq'::regclass) NOT NULL,
     edr_id character(9) NOT NULL,
     ancient_city character varying(30),
     find_spot character varying(150),
     measurements character varying(100),
     writing_style character varying(30),
-    "language" character varying(30),
+    language character varying(30),
     content text,
     bibliography text,
-    numberofimages integer DEFAULT 0,
     apparatus text,
     apparatus_displayed text
 );
 
 
-ALTER TABLE public.edr_inscriptions OWNER TO sprenkle;
+ALTER TABLE edr_inscriptions OWNER TO sprenkle;
 
 --
--- Name: figural_graffiti_info; Type: TABLE; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: figural_graffiti_info; Type: TABLE; Schema: public; Owner: sprenkle
 --
 
 CREATE TABLE figural_graffiti_info (
-    edr_id character(9),
+    edr_id character(9) NOT NULL,
     description_in_latin text,
     description_in_english text
 );
 
 
-ALTER TABLE public.figural_graffiti_info OWNER TO sprenkle;
+ALTER TABLE figural_graffiti_info OWNER TO sprenkle;
 
 --
 -- Name: graffitotodrawingtags_id_seq; Type: SEQUENCE; Schema: public; Owner: sprenkle
 --
 
 CREATE SEQUENCE graffitotodrawingtags_id_seq
+    START WITH 1
     INCREMENT BY 1
-    NO MAXVALUE
     NO MINVALUE
+    NO MAXVALUE
     CACHE 1;
 
 
-ALTER TABLE public.graffitotodrawingtags_id_seq OWNER TO sprenkle;
+ALTER TABLE graffitotodrawingtags_id_seq OWNER TO sprenkle;
 
 --
--- Name: graffitotodrawingtags; Type: TABLE; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: graffitotodrawingtags; Type: TABLE; Schema: public; Owner: sprenkle
 --
 
 CREATE TABLE graffitotodrawingtags (
@@ -163,50 +207,66 @@ CREATE TABLE graffitotodrawingtags (
 );
 
 
-ALTER TABLE public.graffitotodrawingtags OWNER TO sprenkle;
+ALTER TABLE graffitotodrawingtags OWNER TO sprenkle;
+
+--
+-- Name: greatest_hits_info; Type: TABLE; Schema: public; Owner: sprenkle
+--
+
+CREATE TABLE greatest_hits_info (
+    edr_id character(9) NOT NULL,
+    commentary text,
+    preferred_image character varying(30)
+);
+
+
+ALTER TABLE greatest_hits_info OWNER TO sprenkle;
 
 --
 -- Name: insula_id_seq; Type: SEQUENCE; Schema: public; Owner: sprenkle
 --
 
 CREATE SEQUENCE insula_id_seq
+    START WITH 1
     INCREMENT BY 1
-    NO MAXVALUE
     NO MINVALUE
+    NO MAXVALUE
     CACHE 1;
 
 
-ALTER TABLE public.insula_id_seq OWNER TO sprenkle;
+ALTER TABLE insula_id_seq OWNER TO sprenkle;
 
 --
--- Name: insula; Type: TABLE; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: insula; Type: TABLE; Schema: public; Owner: sprenkle
 --
 
 CREATE TABLE insula (
     id integer DEFAULT nextval('insula_id_seq'::regclass) NOT NULL,
     modern_city character varying(30),
-    name character varying(20),
-    description character varying(100)
+    short_name character varying(20),
+    full_name character varying(100),
+    pleiades_id character varying(15)
 );
 
 
-ALTER TABLE public.insula OWNER TO sprenkle;
+ALTER TABLE insula OWNER TO sprenkle;
 
 --
 -- Name: property_id_seq; Type: SEQUENCE; Schema: public; Owner: sprenkle
 --
 
 CREATE SEQUENCE property_id_seq
+    START WITH 1
     INCREMENT BY 1
-    NO MAXVALUE
     NO MINVALUE
+    NO MAXVALUE
     CACHE 1;
 
 
-ALTER TABLE public.property_id_seq OWNER TO sprenkle;
+ALTER TABLE property_id_seq OWNER TO sprenkle;
 
 --
--- Name: properties; Type: TABLE; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: properties; Type: TABLE; Schema: public; Owner: sprenkle
 --
 
 CREATE TABLE properties (
@@ -215,39 +275,43 @@ CREATE TABLE properties (
     additional_properties character varying(20),
     property_name character varying(70),
     italian_property_name character varying(70),
-    insula_id integer
+    insula_id integer,
+    pleiades_id character varying(15),
+    commentary text,
+    is_insula_based boolean
 );
 
 
-ALTER TABLE public.properties OWNER TO sprenkle;
+ALTER TABLE properties OWNER TO sprenkle;
 
 --
 -- Name: property_type_id_seq; Type: SEQUENCE; Schema: public; Owner: sprenkle
 --
 
 CREATE SEQUENCE property_type_id_seq
+    START WITH 1
     INCREMENT BY 1
-    NO MAXVALUE
     NO MINVALUE
+    NO MAXVALUE
     CACHE 1;
 
 
-ALTER TABLE public.property_type_id_seq OWNER TO sprenkle;
+ALTER TABLE property_type_id_seq OWNER TO sprenkle;
 
 --
--- Name: propertytopropertytype; Type: TABLE; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: propertytopropertytype; Type: TABLE; Schema: public; Owner: sprenkle
 --
 
 CREATE TABLE propertytopropertytype (
-    property_id integer,
-    property_type integer
+    property_id integer NOT NULL,
+    property_type integer NOT NULL
 );
 
 
-ALTER TABLE public.propertytopropertytype OWNER TO sprenkle;
+ALTER TABLE propertytopropertytype OWNER TO sprenkle;
 
 --
--- Name: propertytypes; Type: TABLE; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: propertytypes; Type: TABLE; Schema: public; Owner: sprenkle
 --
 
 CREATE TABLE propertytypes (
@@ -257,59 +321,73 @@ CREATE TABLE propertytypes (
 );
 
 
-ALTER TABLE public.propertytypes OWNER TO sprenkle;
+ALTER TABLE propertytypes OWNER TO sprenkle;
+
+create table property_links ( 
+	property_id integer references properties(id) on delete cascade, 
+	link_name varchar(70), 
+	link varchar(200)
+);
+
+create table photos (
+	edr_id character(9) references edr_inscriptions (edr_id) on delete cascade,
+	photo_id varchar(20),
+	UNIQUE(edr_id, photo_id)
+);
+
 
 --
--- Name: roles; Type: TABLE; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: roles; Type: TABLE; Schema: public; Owner: sprenkle
 --
 
 CREATE TABLE roles (
     id integer,
-    "role" character varying(30)
+    role character varying(30)
 );
 
 
-ALTER TABLE public.roles OWNER TO sprenkle;
+ALTER TABLE roles OWNER TO sprenkle;
 
 --
 -- Name: user_ids_sequence; Type: SEQUENCE; Schema: public; Owner: sprenkle
 --
 
 CREATE SEQUENCE user_ids_sequence
+    START WITH 1
     INCREMENT BY 1
-    NO MAXVALUE
     NO MINVALUE
+    NO MAXVALUE
     CACHE 1;
 
 
-ALTER TABLE public.user_ids_sequence OWNER TO sprenkle;
+ALTER TABLE user_ids_sequence OWNER TO sprenkle;
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: users; Type: TABLE; Schema: public; Owner: sprenkle
 --
 
 CREATE TABLE users (
     id integer DEFAULT nextval('user_ids_sequence'::regclass) NOT NULL,
-    "password" character varying(64) NOT NULL,
+    password character varying(64) NOT NULL,
     username character varying(20) NOT NULL,
     name character varying(30),
-    "role" character varying(30),
+    role character varying(30),
     enabled boolean
 );
 
 
-ALTER TABLE public.users OWNER TO sprenkle;
+ALTER TABLE users OWNER TO sprenkle;
 
 --
--- Name: agp_inscription_annotations_eagle_id_key; Type: CONSTRAINT; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: agp_inscription_annotations_edr_id_key; Type: CONSTRAINT; Schema: public; Owner: sprenkle
 --
 
 ALTER TABLE ONLY agp_inscription_info
-    ADD CONSTRAINT agp_inscription_annotations_eagle_id_key UNIQUE (edr_id);
+    ADD CONSTRAINT agp_inscription_annotations_edr_id_key UNIQUE (edr_id);
 
 
 --
--- Name: agp_inscription_annotations_pkey; Type: CONSTRAINT; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: agp_inscription_annotations_pkey; Type: CONSTRAINT; Schema: public; Owner: sprenkle
 --
 
 ALTER TABLE ONLY agp_inscription_info
@@ -317,7 +395,23 @@ ALTER TABLE ONLY agp_inscription_info
 
 
 --
--- Name: drawing_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: cities_unique_key; Type: CONSTRAINT; Schema: public; Owner: sprenkle
+--
+
+ALTER TABLE ONLY cities
+    ADD CONSTRAINT cities_unique_key UNIQUE (name);
+
+
+--
+-- Name: city_primary_key; Type: CONSTRAINT; Schema: public; Owner: sprenkle
+--
+
+ALTER TABLE ONLY cities
+    ADD CONSTRAINT city_primary_key PRIMARY KEY (id);
+
+
+--
+-- Name: drawing_tags_pkey; Type: CONSTRAINT; Schema: public; Owner: sprenkle
 --
 
 ALTER TABLE ONLY drawing_tags
@@ -325,23 +419,31 @@ ALTER TABLE ONLY drawing_tags
 
 
 --
--- Name: eagle_inscriptions_eagle_id_key; Type: CONSTRAINT; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: edr_inscriptions_edr_id_key; Type: CONSTRAINT; Schema: public; Owner: sprenkle
 --
 
 ALTER TABLE ONLY edr_inscriptions
-    ADD CONSTRAINT eagle_inscriptions_eagle_id_key UNIQUE (edr_id);
+    ADD CONSTRAINT edr_inscriptions_edr_id_key UNIQUE (edr_id);
 
 
 --
--- Name: eagle_inscriptions_pkey; Type: CONSTRAINT; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: edr_inscriptions_pkey; Type: CONSTRAINT; Schema: public; Owner: sprenkle
 --
 
 ALTER TABLE ONLY edr_inscriptions
-    ADD CONSTRAINT eagle_inscriptions_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT edr_inscriptions_pkey PRIMARY KEY (id);
 
 
 --
--- Name: graffitotodrawingtags_graffito_id_key; Type: CONSTRAINT; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: figural_graffiti_info_pkey; Type: CONSTRAINT; Schema: public; Owner: sprenkle
+--
+
+ALTER TABLE ONLY figural_graffiti_info
+    ADD CONSTRAINT figural_graffiti_info_pkey PRIMARY KEY (edr_id);
+
+
+--
+-- Name: graffitotodrawingtags_graffito_id_key; Type: CONSTRAINT; Schema: public; Owner: sprenkle
 --
 
 ALTER TABLE ONLY graffitotodrawingtags
@@ -349,7 +451,7 @@ ALTER TABLE ONLY graffitotodrawingtags
 
 
 --
--- Name: graffitotodrawingtags_pkey; Type: CONSTRAINT; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: graffitotodrawingtags_pkey; Type: CONSTRAINT; Schema: public; Owner: sprenkle
 --
 
 ALTER TABLE ONLY graffitotodrawingtags
@@ -357,15 +459,23 @@ ALTER TABLE ONLY graffitotodrawingtags
 
 
 --
--- Name: insula_modern_city_key; Type: CONSTRAINT; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: greatest_hits_primary_key; Type: CONSTRAINT; Schema: public; Owner: sprenkle
+--
+
+ALTER TABLE ONLY greatest_hits_info
+    ADD CONSTRAINT greatest_hits_primary_key PRIMARY KEY (edr_id);
+
+
+--
+-- Name: insula_modern_city_key; Type: CONSTRAINT; Schema: public; Owner: sprenkle
 --
 
 ALTER TABLE ONLY insula
-    ADD CONSTRAINT insula_modern_city_key UNIQUE (modern_city, name);
+    ADD CONSTRAINT insula_modern_city_key UNIQUE (modern_city, short_name);
 
 
 --
--- Name: insula_pkey; Type: CONSTRAINT; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: insula_pkey; Type: CONSTRAINT; Schema: public; Owner: sprenkle
 --
 
 ALTER TABLE ONLY insula
@@ -373,7 +483,7 @@ ALTER TABLE ONLY insula
 
 
 --
--- Name: properties_pkey; Type: CONSTRAINT; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: properties_pkey; Type: CONSTRAINT; Schema: public; Owner: sprenkle
 --
 
 ALTER TABLE ONLY properties
@@ -381,7 +491,7 @@ ALTER TABLE ONLY properties
 
 
 --
--- Name: properties_uniq_key; Type: CONSTRAINT; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: properties_uniq_key; Type: CONSTRAINT; Schema: public; Owner: sprenkle
 --
 
 ALTER TABLE ONLY properties
@@ -389,15 +499,15 @@ ALTER TABLE ONLY properties
 
 
 --
--- Name: propertytopropertytype_property_id_key; Type: CONSTRAINT; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: propertyToPropertyTypes_primary_key; Type: CONSTRAINT; Schema: public; Owner: sprenkle
 --
 
 ALTER TABLE ONLY propertytopropertytype
-    ADD CONSTRAINT propertytopropertytype_property_id_key UNIQUE (property_id, property_type);
+    ADD CONSTRAINT "propertyToPropertyTypes_primary_key" PRIMARY KEY (property_id, property_type);
 
 
 --
--- Name: propertytypes_name_key; Type: CONSTRAINT; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: propertytypes_name_key; Type: CONSTRAINT; Schema: public; Owner: sprenkle
 --
 
 ALTER TABLE ONLY propertytypes
@@ -405,7 +515,7 @@ ALTER TABLE ONLY propertytypes
 
 
 --
--- Name: propertytypes_pkey; Type: CONSTRAINT; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: propertytypes_pkey; Type: CONSTRAINT; Schema: public; Owner: sprenkle
 --
 
 ALTER TABLE ONLY propertytypes
@@ -413,7 +523,7 @@ ALTER TABLE ONLY propertytypes
 
 
 --
--- Name: unique_drawing_tag_name; Type: CONSTRAINT; Schema: public; Owner: sprenkle; Tablespace: 
+-- Name: unique_drawing_tag_name; Type: CONSTRAINT; Schema: public; Owner: sprenkle
 --
 
 ALTER TABLE ONLY drawing_tags
@@ -421,27 +531,35 @@ ALTER TABLE ONLY drawing_tags
 
 
 --
--- Name: agp_inscription_annotations_eagle_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: sprenkle
+-- Name: agp_inscription_annotations_edr_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: sprenkle
 --
 
 ALTER TABLE ONLY agp_inscription_info
-    ADD CONSTRAINT agp_inscription_annotations_eagle_id_fkey FOREIGN KEY (edr_id) REFERENCES edr_inscriptions(edr_id) ON DELETE CASCADE;
+    ADD CONSTRAINT agp_inscription_annotations_edr_id_fkey FOREIGN KEY (edr_id) REFERENCES edr_inscriptions(edr_id) ON DELETE CASCADE;
 
 
 --
--- Name: agp_inscription_annotations_property_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: sprenkle
+-- Name: agp_inscription_annotations_properies_fkey; Type: FK CONSTRAINT; Schema: public; Owner: sprenkle
 --
 
 ALTER TABLE ONLY agp_inscription_info
-    ADD CONSTRAINT agp_inscription_annotations_property_id_fkey FOREIGN KEY (property_id) REFERENCES properties(id);
+    ADD CONSTRAINT agp_inscription_annotations_properies_fkey FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE;
 
 
 --
--- Name: figural_graffiti_info_eagle_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: sprenkle
+-- Name: featured_graffiti_edr_fkey; Type: FK CONSTRAINT; Schema: public; Owner: sprenkle
+--
+
+ALTER TABLE ONLY greatest_hits_info
+    ADD CONSTRAINT featured_graffiti_edr_fkey FOREIGN KEY (edr_id) REFERENCES agp_inscription_info(edr_id) ON DELETE CASCADE;
+
+
+--
+-- Name: figural_graffiti_info_edr_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: sprenkle
 --
 
 ALTER TABLE ONLY figural_graffiti_info
-    ADD CONSTRAINT figural_graffiti_info_eagle_id_fkey FOREIGN KEY (edr_id) REFERENCES edr_inscriptions(edr_id) ON DELETE CASCADE;
+    ADD CONSTRAINT figural_graffiti_info_edr_id_fkey FOREIGN KEY (edr_id) REFERENCES edr_inscriptions(edr_id) ON DELETE CASCADE;
 
 
 --
@@ -458,6 +576,14 @@ ALTER TABLE ONLY graffitotodrawingtags
 
 ALTER TABLE ONLY graffitotodrawingtags
     ADD CONSTRAINT graffitotodrawingtags_graffito_id_fkey FOREIGN KEY (graffito_id) REFERENCES edr_inscriptions(edr_id) ON DELETE CASCADE;
+
+
+--
+-- Name: greatest_hits_fk; Type: FK CONSTRAINT; Schema: public; Owner: sprenkle
+--
+
+ALTER TABLE ONLY greatest_hits_info
+    ADD CONSTRAINT greatest_hits_fk FOREIGN KEY (edr_id) REFERENCES edr_inscriptions(edr_id);
 
 
 --
@@ -501,7 +627,6 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 REVOKE ALL ON SEQUENCE inscription_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE inscription_id_seq FROM sprenkle;
 GRANT ALL ON SEQUENCE inscription_id_seq TO sprenkle;
-GRANT SELECT,UPDATE ON SEQUENCE inscription_id_seq TO cs335;
 
 
 --
@@ -511,7 +636,16 @@ GRANT SELECT,UPDATE ON SEQUENCE inscription_id_seq TO cs335;
 REVOKE ALL ON TABLE agp_inscription_info FROM PUBLIC;
 REVOKE ALL ON TABLE agp_inscription_info FROM sprenkle;
 GRANT ALL ON TABLE agp_inscription_info TO sprenkle;
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE agp_inscription_info TO cs335;
+
+
+--
+-- Name: cities; Type: ACL; Schema: public; Owner: sprenkle
+--
+
+REVOKE ALL ON TABLE cities FROM PUBLIC;
+REVOKE ALL ON TABLE cities FROM sprenkle;
+GRANT ALL ON TABLE cities TO sprenkle;
+GRANT SELECT,REFERENCES,UPDATE ON TABLE cities TO PUBLIC;
 
 
 --
@@ -521,7 +655,6 @@ GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE agp_inscription_info TO cs335;
 REVOKE ALL ON SEQUENCE drawing_tag_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE drawing_tag_id_seq FROM sprenkle;
 GRANT ALL ON SEQUENCE drawing_tag_id_seq TO sprenkle;
-GRANT ALL ON SEQUENCE drawing_tag_id_seq TO cs335;
 
 
 --
@@ -531,18 +664,15 @@ GRANT ALL ON SEQUENCE drawing_tag_id_seq TO cs335;
 REVOKE ALL ON TABLE drawing_tags FROM PUBLIC;
 REVOKE ALL ON TABLE drawing_tags FROM sprenkle;
 GRANT ALL ON TABLE drawing_tags TO sprenkle;
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE drawing_tags TO cs335;
 
 
 --
--- Name: eagle_inscription_id_seq; Type: ACL; Schema: public; Owner: sprenkle
+-- Name: edr_inscription_id_seq; Type: ACL; Schema: public; Owner: sprenkle
 --
 
-REVOKE ALL ON SEQUENCE eagle_inscription_id_seq FROM PUBLIC;
-REVOKE ALL ON SEQUENCE eagle_inscription_id_seq FROM sprenkle;
-GRANT ALL ON SEQUENCE eagle_inscription_id_seq TO sprenkle;
-GRANT ALL ON SEQUENCE eagle_inscription_id_seq TO jangha;
-GRANT ALL ON SEQUENCE eagle_inscription_id_seq TO cs335;
+REVOKE ALL ON SEQUENCE edr_inscription_id_seq FROM PUBLIC;
+REVOKE ALL ON SEQUENCE edr_inscription_id_seq FROM sprenkle;
+GRANT ALL ON SEQUENCE edr_inscription_id_seq TO sprenkle;
 
 
 --
@@ -552,7 +682,6 @@ GRANT ALL ON SEQUENCE eagle_inscription_id_seq TO cs335;
 REVOKE ALL ON TABLE edr_inscriptions FROM PUBLIC;
 REVOKE ALL ON TABLE edr_inscriptions FROM sprenkle;
 GRANT ALL ON TABLE edr_inscriptions TO sprenkle;
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE edr_inscriptions TO cs335;
 
 
 --
@@ -562,7 +691,6 @@ GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE edr_inscriptions TO cs335;
 REVOKE ALL ON TABLE figural_graffiti_info FROM PUBLIC;
 REVOKE ALL ON TABLE figural_graffiti_info FROM sprenkle;
 GRANT ALL ON TABLE figural_graffiti_info TO sprenkle;
-GRANT ALL ON TABLE figural_graffiti_info TO web;
 
 
 --
@@ -572,7 +700,6 @@ GRANT ALL ON TABLE figural_graffiti_info TO web;
 REVOKE ALL ON SEQUENCE graffitotodrawingtags_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE graffitotodrawingtags_id_seq FROM sprenkle;
 GRANT ALL ON SEQUENCE graffitotodrawingtags_id_seq TO sprenkle;
-GRANT ALL ON SEQUENCE graffitotodrawingtags_id_seq TO cs335;
 
 
 --
@@ -582,7 +709,16 @@ GRANT ALL ON SEQUENCE graffitotodrawingtags_id_seq TO cs335;
 REVOKE ALL ON TABLE graffitotodrawingtags FROM PUBLIC;
 REVOKE ALL ON TABLE graffitotodrawingtags FROM sprenkle;
 GRANT ALL ON TABLE graffitotodrawingtags TO sprenkle;
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE graffitotodrawingtags TO cs335;
+
+
+--
+-- Name: greatest_hits_info; Type: ACL; Schema: public; Owner: sprenkle
+--
+
+REVOKE ALL ON TABLE greatest_hits_info FROM PUBLIC;
+REVOKE ALL ON TABLE greatest_hits_info FROM sprenkle;
+GRANT ALL ON TABLE greatest_hits_info TO sprenkle;
+GRANT SELECT,INSERT,UPDATE ON TABLE greatest_hits_info TO PUBLIC;
 
 
 --
@@ -592,7 +728,6 @@ GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE graffitotodrawingtags TO cs335;
 REVOKE ALL ON SEQUENCE insula_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE insula_id_seq FROM sprenkle;
 GRANT ALL ON SEQUENCE insula_id_seq TO sprenkle;
-GRANT SELECT,UPDATE ON SEQUENCE insula_id_seq TO web;
 
 
 --
@@ -602,7 +737,6 @@ GRANT SELECT,UPDATE ON SEQUENCE insula_id_seq TO web;
 REVOKE ALL ON TABLE insula FROM PUBLIC;
 REVOKE ALL ON TABLE insula FROM sprenkle;
 GRANT ALL ON TABLE insula TO sprenkle;
-GRANT SELECT,INSERT ON TABLE insula TO web;
 
 
 --
@@ -612,7 +746,6 @@ GRANT SELECT,INSERT ON TABLE insula TO web;
 REVOKE ALL ON SEQUENCE property_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE property_id_seq FROM sprenkle;
 GRANT ALL ON SEQUENCE property_id_seq TO sprenkle;
-GRANT ALL ON SEQUENCE property_id_seq TO cs335;
 
 
 --
@@ -622,7 +755,6 @@ GRANT ALL ON SEQUENCE property_id_seq TO cs335;
 REVOKE ALL ON TABLE properties FROM PUBLIC;
 REVOKE ALL ON TABLE properties FROM sprenkle;
 GRANT ALL ON TABLE properties TO sprenkle;
-GRANT ALL ON TABLE properties TO cs335;
 
 
 --
@@ -632,7 +764,6 @@ GRANT ALL ON TABLE properties TO cs335;
 REVOKE ALL ON SEQUENCE property_type_id_seq FROM PUBLIC;
 REVOKE ALL ON SEQUENCE property_type_id_seq FROM sprenkle;
 GRANT ALL ON SEQUENCE property_type_id_seq TO sprenkle;
-GRANT ALL ON SEQUENCE property_type_id_seq TO cs335;
 
 
 --
@@ -642,7 +773,6 @@ GRANT ALL ON SEQUENCE property_type_id_seq TO cs335;
 REVOKE ALL ON TABLE propertytopropertytype FROM PUBLIC;
 REVOKE ALL ON TABLE propertytopropertytype FROM sprenkle;
 GRANT ALL ON TABLE propertytopropertytype TO sprenkle;
-GRANT ALL ON TABLE propertytopropertytype TO cs335;
 
 
 --
@@ -652,7 +782,6 @@ GRANT ALL ON TABLE propertytopropertytype TO cs335;
 REVOKE ALL ON TABLE propertytypes FROM PUBLIC;
 REVOKE ALL ON TABLE propertytypes FROM sprenkle;
 GRANT ALL ON TABLE propertytypes TO sprenkle;
-GRANT ALL ON TABLE propertytypes TO cs335;
 
 
 --
@@ -662,7 +791,6 @@ GRANT ALL ON TABLE propertytypes TO cs335;
 REVOKE ALL ON TABLE roles FROM PUBLIC;
 REVOKE ALL ON TABLE roles FROM sprenkle;
 GRANT ALL ON TABLE roles TO sprenkle;
-GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE roles TO cs335;
 
 
 --
@@ -672,8 +800,6 @@ GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE roles TO cs335;
 REVOKE ALL ON SEQUENCE user_ids_sequence FROM PUBLIC;
 REVOKE ALL ON SEQUENCE user_ids_sequence FROM sprenkle;
 GRANT ALL ON SEQUENCE user_ids_sequence TO sprenkle;
-GRANT ALL ON SEQUENCE user_ids_sequence TO jangha;
-GRANT ALL ON SEQUENCE user_ids_sequence TO cs335;
 
 
 --
@@ -683,12 +809,8 @@ GRANT ALL ON SEQUENCE user_ids_sequence TO cs335;
 REVOKE ALL ON TABLE users FROM PUBLIC;
 REVOKE ALL ON TABLE users FROM sprenkle;
 GRANT ALL ON TABLE users TO sprenkle;
-GRANT ALL ON TABLE users TO jangha;
-GRANT ALL ON TABLE users TO web;
-GRANT ALL ON TABLE users TO cs335;
 
 
 --
 -- PostgreSQL database dump complete
 --
-

@@ -1,0 +1,50 @@
+Data Set Up 
+================================================
+
+ - Set up PostGreSQL database
+   - Need the DB schema
+ - Get Insula and Properties from Google Drive
+ 	- get from appropriate tab named "for DB"
+ - Get Caption data, etc. from Google Drive
+ 	- 
+ - Get Figural information from Google Drive
+ 	- 
+ - Get atypical address information from Google Drive
+ 	- FindspotsWithoutTypicalAddresses
+
+Populate Default Data 
+ - Insert Property Types - InsertPropertyTypes
+ - Insert Drawing Tags
+ - Insert Themes
+ 
+ Populate Data -- run PopulateDatabase to run all the following together.
+ - Insert cities and insula - InsertCitiesAndInsulae.java - both Pompeii and Herculaneum
+ - Insert properties (includes the property type mappings) - InsertProperties
+ - Insert graffiti - ImportEDRData
+ 	- automatically calls
+ 		HandleFindspotsWithoutAddresses.updateGraffitiLocations(HandleFindspotsWithoutAddresses.LOCATION_FILE_NAME);
+ 		StorePropertiesFromDatabaseForgeoJsonMap.storeProperties();
+		StoreInsulaeFromDatabaseForgeoJsonMap.storeInsulae();
+ - Update the AGP data (translate from EDR) - UpdateAGPInfo
+ 	- automatically calls
+ 		AddEDRLinksToApparatus.addEDRLinksToApparatus();
+		ExtractEDRLanguageForAGPInfo.updateAGPLanguage();
+		ExtractWritingStyleForAGPInfo.updateWritingStyle();
+
+		InsertFiguralInformation.insertFiguralInfo();
+		UpdateSummaryTranslationCommentaryPlus.updateInfo();
+		InsertFeaturedGraffiti.insertFeaturedGraffiti();
+		InsertTranslations.insertTranslationGraffiti();
+		
+	To remove inscriptions where the properties are not known (in Pompeii):
+	
+	select * from agp_inscription_info, edr_inscriptions where agp_inscription_info.edr_id = edr_inscriptions.edr_id and property_id IS NULL and ancient_city= 'Pompeii';
+	
+	# is there a better query to do this?
+	delete from agp_inscription_info where property_id IS NULL and edr_id in (select edr_inscriptions.edr_id from edr_inscriptions where ancient_city='Pompeii');
+	
+	delete from edr_inscriptions where edr_id in (select edr_inscriptions.edr_id from edr_inscriptions left join agp_inscription_info on (edr_inscriptions.edr_id = agp_inscription_info.edr_id) where agp_inscription_info.edr_id IS Null);
+	
+
+Update Elastic Search - AddInscriptionsToElasticSearch
+ 
