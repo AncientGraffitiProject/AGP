@@ -1,14 +1,12 @@
 package edu.wlu.graffiti.dao;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
+import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 
 import edu.wlu.graffiti.bean.DrawingTag;
-import edu.wlu.graffiti.bean.PropertyType;
+import edu.wlu.graffiti.data.rowmapper.DrawingTagRowMapper;
 
 /**
  * Class to extract property types from the DB
@@ -18,27 +16,26 @@ import edu.wlu.graffiti.bean.PropertyType;
  */
 public class DrawingTagsDao extends JdbcTemplate {
 
-	private static final String SELECT_STATEMENT = "SELECT * "
-			+ " FROM drawing_tags";
+	private static final String SELECT_STATEMENT = "SELECT * " + " FROM drawing_tags ORDER BY name";
+	
+	private static final String SELECT_BY_ID = "SELECT * " + " FROM drawing_tags WHERE id = ?";
 
-	private static final class DrawingTagMapper implements
-			RowMapper<DrawingTag> {
-		public DrawingTag mapRow(final ResultSet resultSet, final int rowNum)
-				throws SQLException {
-			final DrawingTag drawingTag = new DrawingTag();
-			drawingTag.setId(resultSet.getInt("id"));
-			drawingTag.setName(resultSet.getString("name"));
-			drawingTag.setDescription(resultSet.getString("description"));
-			return drawingTag;
-		}
-	}
+	public static final String SELECT_BY_EDR_ID = "SELECT drawing_tags.id, name, description "
+			+ "FROM graffitotodrawingtags, drawing_tags WHERE graffito_id = ? "
+			+ "AND drawing_tags.id = graffitotodrawingtags.drawing_tag_id ORDER BY name;";
 
-	// TODO: Set up to cache this
+	private List<DrawingTag> drawingTags = null;
+
+	@Cacheable("drawingTags")
 	public List<DrawingTag> getDrawingTags() {
-		List<DrawingTag> results = query(SELECT_STATEMENT,
-				new DrawingTagMapper());
-		Collections.sort(results);
-		return results;
+		drawingTags = query(SELECT_STATEMENT, new DrawingTagRowMapper());
+		return drawingTags;
+	}
+	
+	@Cacheable("drawingTags")
+	public DrawingTag getDrawingTagById(int drawing_tag_id) {
+		DrawingTag dt = queryForObject(SELECT_BY_ID, new DrawingTagRowMapper(), drawing_tag_id);
+		return dt;
 	}
 
 }

@@ -1,308 +1,447 @@
 package edu.wlu.graffiti.dao;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+import javax.annotation.Resource;
+
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 
-import edu.wlu.graffiti.bean.AgpInscription;
+import edu.wlu.graffiti.bean.City;
 import edu.wlu.graffiti.bean.DrawingTag;
+import edu.wlu.graffiti.bean.GreatestHitsInfo;
 import edu.wlu.graffiti.bean.Inscription;
-import edu.wlu.graffiti.bean.User;
+import edu.wlu.graffiti.bean.Insula;
+import edu.wlu.graffiti.bean.Photo;
+import edu.wlu.graffiti.bean.Property;
+import edu.wlu.graffiti.bean.Theme;
+import edu.wlu.graffiti.data.rowmapper.DrawingTagRowMapper;
+import edu.wlu.graffiti.data.rowmapper.GreatestHItsInfoRowMapper;
+import edu.wlu.graffiti.data.rowmapper.InscriptionRowMapper;
+import edu.wlu.graffiti.data.setup.InsertFeaturedGraffiti;
 
+/**
+ * DB queries about graffiti
+ * 
+ * @author Sara Sprenkle
+ * @author Kelly McCaffrey
+ * @author Cooper Baird
+ * @author Hammad Ahmad
+ * @author Trevor Stalnaker
+ *
+ */
 public class GraffitiDao extends JdbcTemplate {
 
-	private static final String ORDER_BY_EAGLE_INSCRIPTIONS_ID_ASC = "ORDER BY eagle_inscriptions.ID ASC;";
+	private static final String DURING_TEST_LIMIT = ""; // " LIMIT 50";
 
-	private static final String SELECT_STATEMENT = "SELECT *, "
-			+ "agp_inscription_annotations.description AS agp_inscription_annotations_description"
-			+ " FROM eagle_inscriptions "
-			+ "LEFT JOIN agp_inscription_annotations ON eagle_inscriptions.eagle_id=agp_inscription_annotations.eagle_id "
-			+ "LEFT JOIN properties ON agp_inscription_annotations.property_id=properties.id";
+	private static final String ALL_DRAWINGS = "0";
 
-	private static final String FIND_BY_ALL = SELECT_STATEMENT
-			+ " WHERE UPPER(eagle_inscriptions.EAGLE_ID) "
-			+ "LIKE UPPER(?) OR UPPER(ANCIENT_CITY) LIKE UPPER(?) OR "
-			+ "UPPER(FIND_SPOT) LIKE UPPER(?) OR "
-			+ "UPPER(MEASUREMENTS) LIKE UPPER(?) OR "
-			+ "UPPER(eagle_inscriptions.WRITING_STYLE) LIKE UPPER(?) OR "
-			+ "UPPER(LANGUAGE) LIKE UPPER(?) OR "
-			+ "UPPER(CONTENT) LIKE UPPER(?) OR "
-			+ "UPPER(BIBLIOGRAPHY) LIKE UPPER(?) OR "
-			+ "UPPER(IMAGE) LIKE UPPER(?) "
-			+ ORDER_BY_EAGLE_INSCRIPTIONS_ID_ASC;
+	private static final String ORDER_BY_EDR_INSCRIPTIONS_ID_ASC = " ORDER BY edr_inscriptions.edr_id ASC;";
 
-	private static final String FIND_BY_FIND_SPOT = SELECT_STATEMENT
-			+ " WHERE properties.insula = ? AND properties.property_number = ?  "
-			+ ORDER_BY_EAGLE_INSCRIPTIONS_ID_ASC;
+	public static final String SELECT_STATEMENT = "SELECT *, " + "edr_inscriptions.id as local_id, "
+			+ "greatest_hits_info.commentary as gh_commentary, properties.id AS property_id, "
+			+ "insula.short_name AS insula_name " + "FROM edr_inscriptions "
+			+ "LEFT JOIN agp_inscription_info ON edr_inscriptions.edr_id=agp_inscription_info.edr_id "
+			+ "LEFT JOIN figural_graffiti_info ON edr_inscriptions.edr_id=figural_graffiti_info.edr_id "
+			+ "LEFT JOIN greatest_hits_info ON edr_inscriptions.edr_id=greatest_hits_info.edr_id "
+			+ "LEFT JOIN properties ON agp_inscription_info.property_id=properties.id "
+			+ "LEFT JOIN insula ON properties.insula_id=insula.id";
+
+	public static final String SELECT_COUNT = "SELECT COUNT(*) " + "FROM edr_inscriptions "
+			+ "LEFT JOIN agp_inscription_info ON edr_inscriptions.edr_id=agp_inscription_info.edr_id "
+			+ "LEFT JOIN figural_graffiti_info ON edr_inscriptions.edr_id=figural_graffiti_info.edr_id "
+			+ "LEFT JOIN greatest_hits_info ON edr_inscriptions.edr_id=greatest_hits_info.edr_id "
+			+ "LEFT JOIN properties ON agp_inscription_info.property_id=properties.id "
+			+ "LEFT JOIN insula ON properties.insula_id=insula.id";
+
+	private static final String FIND_BY_ALL = SELECT_STATEMENT + " WHERE UPPER(edr_inscriptions.edr_id) "
+			+ "LIKE UPPER(?) OR UPPER(ANCIENT_CITY) LIKE UPPER(?) OR " + "UPPER(FIND_SPOT) LIKE UPPER(?) OR "
+			+ "UPPER(MEASUREMENTS) LIKE UPPER(?) OR " + "UPPER(edr_inscriptions.WRITING_STYLE) LIKE UPPER(?) OR "
+			+ "UPPER(writing_style_in_english) LIKE UPPER(?) OR " + "UPPER(LANGUAGE) LIKE UPPER(?) OR "
+			+ "UPPER(lang_in_english) LIKE UPPER(?) OR " + "UPPER(CONTENT) LIKE UPPER(?) OR "
+			+ "UPPER(BIBLIOGRAPHY) LIKE UPPER(?) OR " + "NUMBEROFIMAGES = ? " + ORDER_BY_EDR_INSCRIPTIONS_ID_ASC;
+
+	private static final String FIND_BY_FIND_SPOT = SELECT_STATEMENT + " WHERE properties.id = ?  "
+			+ ORDER_BY_EDR_INSCRIPTIONS_ID_ASC;
+
+	private static final String FIND_COUNT_BY_FIND_SPOT = SELECT_COUNT + " WHERE properties.id = ?";
 
 	// need to assign property ids to the inscriptions and cross with that info.
 
-	private static final String FIND_BY_PROPERTY_TYPE = 
-			"select *, agp_inscription_annotations.description AS agp_inscription_annotations_description "
-			+ "from eagle_inscriptions, agp_inscription_annotations, propertyTypes, properties, propertytopropertytype "
+	private static final String FIND_BY_PROPERTY_TYPE = "select *, "
+			+ "properties.id AS property_id, greatest_hits_info.commentary as gh_commentary, edr_inscriptions.id as local_id "
+			+ "from edr_inscriptions, agp_inscription_info, figural_graffiti_info, propertyTypes, properties, propertytopropertytype, insula "
 			+ "where propertyTypes.id=? and propertyTypes.id=propertytopropertytype.property_type "
-			+ "and properties.id=propertytopropertytype.property_id and properties.id=agp_inscription_annotations.property_id"
-			+ " and eagle_inscriptions.eagle_id=agp_inscription_annotations.eagle_id "
-			+ ORDER_BY_EAGLE_INSCRIPTIONS_ID_ASC;
+			+ "and properties.id=propertytopropertytype.property_id and properties.id=agp_inscription_info.property_id "
+			+ "and edr_inscriptions.edr_id=agp_inscription_info.edr_id and properties.insula_id = insula.id "
+			+ "AND edr_inscriptions.edr_id=figural_graffiti_info.edr_id ";
 
-	private static final String FIND_BY_CITY = SELECT_STATEMENT
-			+ " WHERE UPPER(ANCIENT_CITY) LIKE UPPER(?) "
-			+ ORDER_BY_EAGLE_INSCRIPTIONS_ID_ASC;
+	private static final String FIND_BY_CITY = SELECT_STATEMENT + " WHERE UPPER(ANCIENT_CITY) LIKE UPPER(?) "
+			+ ORDER_BY_EDR_INSCRIPTIONS_ID_ASC;
 
-	private static final String FIND_BY_CITY_AND_INSULA = SELECT_STATEMENT
-			+ " WHERE UPPER(ANCIENT_CITY) = UPPER(?) "
-			+ "AND properties.insula = ? "
-			+ ORDER_BY_EAGLE_INSCRIPTIONS_ID_ASC;
-	
+	private static final String FIND_BY_CITY_AND_INSULA = SELECT_STATEMENT + " WHERE UPPER(ANCIENT_CITY) = UPPER(?) "
+			+ "AND insula.id = ? " + ORDER_BY_EDR_INSCRIPTIONS_ID_ASC;
+
 	private static final String FIND_BY_CITY_AND_INSULA_AND_PROPERTY = SELECT_STATEMENT
-			+ " WHERE UPPER(ANCIENT_CITY) = UPPER(?) "
-			+ "AND properties.insula = ? and properties.property_number = ? "
-			+ ORDER_BY_EAGLE_INSCRIPTIONS_ID_ASC;
+			+ " WHERE UPPER(ANCIENT_CITY) = UPPER(?) " + "AND insula.id = ? and properties.id = ? "
+			+ ORDER_BY_EDR_INSCRIPTIONS_ID_ASC;
 
-	private static final String FIND_BY_CONTENT = SELECT_STATEMENT
-			+ " WHERE UPPER(CONTENT) LIKE UPPER(?) "
-			+ ORDER_BY_EAGLE_INSCRIPTIONS_ID_ASC;
+	public static final String FIND_BY_PROPERTY = "SELECT COUNT(*) FROM edr_inscriptions "
+			+ "LEFT JOIN agp_inscription_info ON edr_inscriptions.edr_id=agp_inscription_info.edr_id "
+			+ "LEFT JOIN properties ON agp_inscription_info.property_id=properties.id "
+			+ "LEFT JOIN insula ON properties.insula_id=insula.id" + " WHERE properties.id = ? ";
 
-	private static final String FIND_BY_EDR = SELECT_STATEMENT
-			+ " WHERE UPPER(eagle_inscriptions.EAGLE_ID) LIKE UPPER(?) "
-			+ ORDER_BY_EAGLE_INSCRIPTIONS_ID_ASC;
+	private static final String FIND_BY_CONTENT = SELECT_STATEMENT + " WHERE UPPER(CONTENT) LIKE UPPER(?) "
+			+ ORDER_BY_EDR_INSCRIPTIONS_ID_ASC;
 
-	private static final String SELECT_ALL_DRAWING_INSCRIPTIONS = "SELECT *, "
-			+ "agp_inscription_annotations.description AS agp_inscription_annotations_description "
-			+ "FROM graffitotodrawingtags,drawing_tags, eagle_inscriptions "
-			+ "LEFT JOIN agp_inscription_annotations ON eagle_inscriptions.eagle_id=agp_inscription_annotations.eagle_id "
-			+ "LEFT JOIN properties ON agp_inscription_annotations.property_id=properties.id "
-			+ "WHERE eagle_inscriptions.eagle_id=graffitotodrawingtags.graffito_id AND drawing_tag_id=drawing_tags.id AND "
-			+ "eagle_inscriptions.eagle_id=agp_inscription_annotations.eagle_id";
+	private static final String FIND_BY_EDR = SELECT_STATEMENT + " WHERE UPPER(edr_inscriptions.edr_id) = UPPER(?) "
+			+ ORDER_BY_EDR_INSCRIPTIONS_ID_ASC;
 
-	private static final String SELECT_INSCRIPTIONS_BY_DRAWING_TAG = "SELECT *, "
-			+ "agp_inscription_annotations.description AS agp_inscription_annotations_description "
-			+ "FROM graffitotodrawingtags,drawing_tags, eagle_inscriptions "
-			+ "LEFT JOIN agp_inscription_annotations ON eagle_inscriptions.eagle_id=agp_inscription_annotations.eagle_id "
-			+ "LEFT JOIN properties ON agp_inscription_annotations.property_id=properties.id "
-			+ "WHERE drawing_tag_id=(?) AND eagle_inscriptions.eagle_id=graffitotodrawingtags.graffito_id AND drawing_tag_id=drawing_tags.id AND "
-			+ "eagle_inscriptions.eagle_id=agp_inscription_annotations.eagle_id";
+	private static final String SELECT_ALL_DRAWING_INSCRIPTIONS = "SELECT *, " + "edr_inscriptions.id as local_id, "
+			+ "greatest_hits_info.commentary as gh_commentary, properties.id AS property_id " + "FROM edr_inscriptions "
+			+ "LEFT JOIN agp_inscription_info ON edr_inscriptions.edr_id=agp_inscription_info.edr_id "
+			+ "LEFT JOIN properties ON agp_inscription_info.property_id=properties.id "
+			+ "LEFT JOIN figural_graffiti_info ON edr_inscriptions.edr_id=figural_graffiti_info.edr_id "
+			+ "LEFT JOIN greatest_hits_info ON edr_inscriptions.edr_id=greatest_hits_info.edr_id "
+			+ "WHERE has_figural_component = true AND " + "edr_inscriptions.edr_id=agp_inscription_info.edr_id";
+
+	private static final String SELECT_INSCRIPTIONS_BY_DRAWING_TAG = "SELECT *, " + "edr_inscriptions.id AS local_id, "
+			+ "greatest_hits_info.commentary as gh_commentary, properties.id AS property_id "
+			+ "FROM graffitotodrawingtags, edr_inscriptions "
+			+ "LEFT JOIN agp_inscription_info ON edr_inscriptions.edr_id=agp_inscription_info.edr_id "
+			+ "LEFT JOIN properties ON agp_inscription_info.property_id=properties.id "
+			+ "LEFT JOIN figural_graffiti_info ON edr_inscriptions.edr_id=figural_graffiti_info.edr_id "
+			+ "LEFT JOIN greatest_hits_info ON edr_inscriptions.edr_id=greatest_hits_info.edr_id "
+			+ "WHERE has_figural_component = true AND drawing_tag_id=(?) AND edr_inscriptions.edr_id=graffitotodrawingtags.graffito_id AND "
+			+ "edr_inscriptions.edr_id=agp_inscription_info.edr_id";
+
+	private static final String SELECT_INSCRIPTIONS_BY_THEME = "SELECT *, " + "edr_inscriptions.id AS local_id, "
+			+ "greatest_hits_info.commentary as gh_commentary, properties.id AS property_id "
+			+ "FROM graffititothemes, edr_inscriptions "
+			+ "LEFT JOIN agp_inscription_info ON edr_inscriptions.edr_id=agp_inscription_info.edr_id "
+			+ "LEFT JOIN properties ON agp_inscription_info.property_id=properties.id "
+			+ "LEFT JOIN figural_graffiti_info ON edr_inscriptions.edr_id=figural_graffiti_info.edr_id "
+			+ "LEFT JOIN greatest_hits_info ON edr_inscriptions.edr_id=greatest_hits_info.edr_id "
+			+ "WHERE is_themed = true AND theme_id=(?) AND edr_inscriptions.edr_id=graffititothemes.graffito_id AND "
+			+ "edr_inscriptions.edr_id=agp_inscription_info.edr_id";
 
 	private static final String SELECT_DRAWING_TAGS = "SELECT drawing_tags.id, name, description "
 			+ "FROM graffitotodrawingtags, drawing_tags "
 			+ "WHERE graffito_id = ? AND drawing_tags.id = graffitotodrawingtags.drawing_tag_id;";
 
-	private static final class InscriptionRowMapper implements
-			RowMapper<Inscription> {
-		public Inscription mapRow(final ResultSet resultSet, final int rowNum)
-				throws SQLException {
-			final Inscription inscription = new Inscription();
-			final AgpInscription agp = new AgpInscription();
-			inscription.setId(resultSet.getInt("ID"));
-			inscription.setEagleId(resultSet.getString("EAGLE_ID"));
-			inscription.setAncientCity(resultSet.getString("ANCIENT_CITY"));
+	private static final String SELECT_GREATEST_FIGURAL_HITS = SELECT_STATEMENT
+			+ " WHERE is_greatest_hit_figural = True" + ORDER_BY_EDR_INSCRIPTIONS_ID_ASC;
 
-			String propertyName = resultSet.getString("property_name");
-			String insula = resultSet.getString("insula");
-			String property_number = resultSet.getString("property_number");
+	private static final String SELECT_GREATEST_TRANSLATION_HITS = SELECT_STATEMENT
+			+ " WHERE is_greatest_hit_translation = True" + ORDER_BY_EDR_INSCRIPTIONS_ID_ASC;
 
-			String findSpot = propertyName + " (" + insula + "."
-					+ property_number + ")";
+	@Resource
+	private FindspotDao propertyDao;
 
-			inscription.setfindSpot(findSpot);
-			inscription.setMeasurements(resultSet.getString("MEASUREMENTS"));
-			inscription.setLanguage(resultSet.getString("LANGUAGE"));
-			inscription.setContent(resultSet.getString("CONTENT"));
-			inscription.setBibliography(resultSet.getString("BIBLIOGRAPHY"));
-			inscription.setWritingStyle(resultSet.getString("WRITING_STYLE"));
-			inscription.setUrl(resultSet.getString("IMAGE"));
-			agp.setDescription(resultSet
-					.getString("agp_inscription_annotations_description"));
-			agp.setComment(resultSet.getString("comment"));
-			agp.setTranslation(resultSet.getString("translation"));
-			agp.setModern_city(resultSet.getString("modern_city"));
-			agp.setProperty_name(propertyName);
-			agp.setInsula(insula);
-			agp.setPropertyNumber(property_number);
-			inscription.setAgp(agp);
-			return inscription;
-		}
+	@Resource
+	private ThemeDao themeDao;
+
+	@Resource
+	private PhotosDao photosDao;
+
+	@Cacheable("inscriptions")
+	public List<Inscription> getAllInscriptions() {
+		List<Inscription> results = query(SELECT_STATEMENT + DURING_TEST_LIMIT, new InscriptionRowMapper());
+		addOtherInfo(results);
+		return results;
 	}
 
-	private static final class DrawingTagRowMapper implements
-			RowMapper<DrawingTag> {
-		public DrawingTag mapRow(final ResultSet resultSet, final int rowNum)
-				throws SQLException {
-			final DrawingTag drawingtag = new DrawingTag();
-			drawingtag.setId(resultSet.getInt("ID"));
-			drawingtag.setName(resultSet.getString("name"));
-			drawingtag.setDescription(resultSet.getString("description"));
-			return drawingtag;
-		}
+	public List<Inscription> getGreatestFiguralHits() {
+		List<Inscription> results = query(SELECT_GREATEST_FIGURAL_HITS, new InscriptionRowMapper());
+		addOtherInfo(results);
+		return results;
+	}
+
+	public List<Inscription> getGreatestTranslationHits() {
+		List<Inscription> results = query(SELECT_GREATEST_TRANSLATION_HITS, new InscriptionRowMapper());
+		addOtherInfo(results);
+		return results;
 	}
 
 	public List<Inscription> getInscriptions(final String searchArg) {
 		final Object[] searchArgs = new String[9];
 		Arrays.fill(searchArgs, "%" + searchArg + "%");
-		List<Inscription> results = query(FIND_BY_ALL,
-				new InscriptionRowMapper(), searchArgs);
-		for (Inscription inscription : results) {
-			addDrawingTagsToInscription(inscription);
-		}
+		List<Inscription> results = query(FIND_BY_ALL, new InscriptionRowMapper(), searchArgs);
+		addOtherInfo(results);
 		return results;
 	}
 
-	public List<Inscription> getInscriptionsByPropertyType(
-			final int propertyType) {
-		List<Inscription> results = query(FIND_BY_PROPERTY_TYPE,
-				new InscriptionRowMapper(), propertyType);
-		for (Inscription inscription : results) {
-			addDrawingTagsToInscription(inscription);
-		}
+	public List<Inscription> getInscriptionsByPropertyType(final int propertyType) {
+		List<Inscription> results = query(FIND_BY_PROPERTY_TYPE, new InscriptionRowMapper(), propertyType);
+		addOtherInfo(results);
 		return results;
 	}
 
-	public List<Inscription> getInscriptionsByFindSpot(final String insula, final String propertyNumber) {
-		List<Inscription> results = query(FIND_BY_FIND_SPOT,
-				new InscriptionRowMapper(), insula, propertyNumber);
-		for (Inscription inscription : results) {
-			addDrawingTagsToInscription(inscription);
-		}
+	public List<Inscription> getInscriptionsByFindSpot(final int property_id) {
+		List<Inscription> results = query(FIND_BY_FIND_SPOT, new InscriptionRowMapper(), property_id);
+		addOtherInfo(results);
 		return results;
 	}
-	
+
+	public int getInscriptionCountByFindSpot(final int property_id) {
+		return queryForObject(FIND_COUNT_BY_FIND_SPOT, new Object[] { property_id }, Integer.class);
+	}
+
 	public List<Inscription> getInscriptionsByContent(final String searchArg) {
-		List<Inscription> results = query(FIND_BY_CONTENT,
-				new InscriptionRowMapper(), "%" + searchArg + "%");
-		for (Inscription inscription : results) {
-			addDrawingTagsToInscription(inscription);
-		}
+		List<Inscription> results = query(FIND_BY_CONTENT, new InscriptionRowMapper(), "%" + searchArg + "%");
+		addOtherInfo(results);
 		return results;
 	}
 
-	public List<Inscription> getInscriptionsByEDR(final String searchArg) {
-		List<Inscription> results = query(FIND_BY_EDR,
-				new InscriptionRowMapper(), "%" + searchArg + "%");
-		for (Inscription inscription : results) {
-			addDrawingTagsToInscription(inscription);
+	@Cacheable(cacheNames = "inscriptions", key = "#edrId")
+	public Inscription getInscriptionByEDR(final String edrId) {
+		List<Inscription> results = query(FIND_BY_EDR, new InscriptionRowMapper(), edrId);
+		if (results.size() == 0) {
+			return null;
 		}
-		return results;
+		Inscription result = results.get(0);
+		addOtherInfo(result);
+		return result;
 	}
 
 	public List<Inscription> getInscriptionByDrawing(String drawingTagId) {
 		List<Inscription> results = null;
-		// The 0 means "All drawings"
-		if (drawingTagId.equals("0")) {
-			results = query(SELECT_ALL_DRAWING_INSCRIPTIONS,
-					new InscriptionRowMapper());
+		if (drawingTagId.equals(ALL_DRAWINGS)) {
+			results = query(SELECT_ALL_DRAWING_INSCRIPTIONS, new InscriptionRowMapper());
 		} else {
-			results = query(SELECT_INSCRIPTIONS_BY_DRAWING_TAG,
-					new InscriptionRowMapper(), Integer.parseInt(drawingTagId));
+			results = query(SELECT_INSCRIPTIONS_BY_DRAWING_TAG, new InscriptionRowMapper(),
+					Integer.parseInt(drawingTagId));
 		}
 
-		for (Inscription inscription : results) {
-			addDrawingTagsToInscription(inscription);
-		}
+		addOtherInfo(results);
 
 		return results;
 	}
 
-	private void addDrawingTagsToInscription(Inscription inscription) {
-		List<DrawingTag> drawingTags = query(SELECT_DRAWING_TAGS,
-				new DrawingTagRowMapper(), inscription.getEagleId());
-		inscription.addDrawingTags(drawingTags);
+	public List<Inscription> getInscriptionByTheme(int themeId) {
+		List<Inscription> results = null;
+		results = query(SELECT_INSCRIPTIONS_BY_THEME, new InscriptionRowMapper(), themeId);
+		return results;
 	}
-	
 
+	/*
+	 * Possibly should be removed; no longer used? public List<Inscription>
+	 * getInscriptionById(String id) { List<Inscription> results = query(FIND_BY_ID,
+	 * new InscriptionRowMapper(), id); addOtherInfo(results); return results; }
+	 */
+
+	/**
+	 * Adds the drawing tag information to the Inscription object
+	 * 
+	 * @param inscription
+	 */
+	@Cacheable("drawingTags")
+	private void retrieveDrawingTagsForInscription(Inscription inscription) {
+		List<DrawingTag> drawingTags = query(SELECT_DRAWING_TAGS, new DrawingTagRowMapper(), inscription.getEdrId());
+		inscription.getAgp().getFiguralInfo().addDrawingTags(drawingTags);
+	}
+
+	/**
+	 * Gets the themes associated with an inscription.
+	 * 
+	 * @param inscription
+	 */
+	private void retrieveThemesForInscription(Inscription inscription) {
+		List<Theme> themes = themeDao.getThemesByEDR(inscription.getEdrId());
+		inscription.getAgp().setThemes(themes);
+	}
+
+	private void addPropertyToInscription(Inscription inscription) {
+		// TODO: SPECIAL HANDLING until we have the info fixed.
+		if (inscription.getAgp().getProperty().getId() == 0) {
+			// System.out.println("AGP Property_ID = 0");
+			Property property = new Property();
+			property.setId(0);
+			property.setPropertyName("Not found");
+			property.setPropertyNumber("0");
+			Insula insula = new Insula();
+			insula.setModernCity(inscription.getAncientCity());
+			insula.setShortName("Unknown");
+			City city = new City();
+			city.setName(inscription.getAncientCity());
+			insula.setCity(city);
+			property.setInsula(insula);
+			inscription.getAgp().setProperty(property);
+		} else {
+			int id = inscription.getAgp().getProperty().getId();
+			Property property = propertyDao.getPropertyById(id);
+			inscription.getAgp().setProperty(property);
+		}
+	}
+
+	// @Cacheable("inscriptions")
 	public List<Inscription> getInscriptionsByCity(final String city) {
-		List<Inscription> results = query(FIND_BY_CITY,
-				new InscriptionRowMapper(), city );
-		for (Inscription inscription : results) {
-			addDrawingTagsToInscription(inscription);
-		}
+		List<Inscription> results = query(FIND_BY_CITY, new InscriptionRowMapper(), city);
+		addOtherInfo(results);
 		return results;
 	}
 
-	public List<Inscription> getInscriptionsByCityAndInsula(String city,
-			String insula) {
-		List<Inscription> results = query(FIND_BY_CITY_AND_INSULA,
-				new InscriptionRowMapper(), city, insula);
-		for (Inscription inscription : results) {
-			addDrawingTagsToInscription(inscription);
-		}
-		return results;
-	}
-	
-	public List<Inscription> getInscriptionsByCityAndInsulaAndPropertyNumber(String city,
-			String insula, String propertyNumber) {
-		List<Inscription> results = query(FIND_BY_CITY_AND_INSULA_AND_PROPERTY,
-				new InscriptionRowMapper(), city, insula, propertyNumber);
-		for (Inscription inscription : results) {
-			addDrawingTagsToInscription(inscription);
-		}
+	// @Cacheable("inscriptions")
+	public List<Inscription> getInscriptionsByCityAndInsula(String city, int insula_id) {
+		List<Inscription> results = query(FIND_BY_CITY_AND_INSULA, new InscriptionRowMapper(), city, insula_id);
+		addOtherInfo(results);
 		return results;
 	}
 
-	public void updateInscription(ArrayList<String> fields) {
-		String sql = "UPDATE eagle_inscriptions "
-				+ "SET ancient_city=(?),find_spot=(?),measurements=(?), language=(?), content=(?),bibliography=(?), writing_style=(?), image=(?) "
-				+ "where eagle_id=(?)";
+	// @Cacheable("inscriptions")
+	public List<Inscription> getInscriptionsByCityAndInsulaAndPropertyNumber(String city, int insula_id,
+			int property_id) {
+		List<Inscription> results = query(FIND_BY_CITY_AND_INSULA_AND_PROPERTY, new InscriptionRowMapper(), city,
+				insula_id, property_id);
+		addOtherInfo(results);
+		return results;
+	}
+
+	/**
+	 * Adds additional information to the inscription
+	 * 
+	 * @param inscription
+	 */
+	private void addOtherInfo(Inscription inscription) {
+		retrieveDrawingTagsForInscription(inscription);
+		addPropertyToInscription(inscription);
+		retrieveThemesForInscription(inscription);
+		addPhotos(inscription);
+	}
+
+	private void addPhotos(Inscription inscription) {
+		List<Photo> photos = photosDao.getPhotosByEDR(inscription.getEdrId());
+		inscription.setPhotos(photos);
+	}
+
+	/**
+	 * Adds additional information to each inscription
+	 * 
+	 * @param inscriptions
+	 */
+	private void addOtherInfo(List<Inscription> inscriptions) {
+		for (Inscription i : inscriptions) {
+			addOtherInfo(i);
+		}
+	}
+
+	// update edr inscription function
+	@CacheEvict(value = "inscriptions", key = "#edrID")
+	public void updateEdrInscription(ArrayList<String> fields, String edrID) {
+		String sql = "UPDATE edr_inscriptions "
+				+ "SET ancient_city=(?),find_spot=(?), language=(?), content=(?),bibliography=(?), writing_style=(?), apparatus=(?) "
+				+ "where edr_id=(?)";
+		fields.add(edrID);
 		update(sql, fields.toArray());
 	}
 
-	public void insertInscription(ArrayList<ArrayList<String>> inscriptions) {
-		String sql = "INSERT INTO eagle_inscriptions "
-				+ "(eagle_id,ancient_city,find_spot,measurements, language, content,bibliography, writing_style, image)"
-				+ " VALUES (?,?,?,?,?,?,?,?,?)";
+	// update agp_inscription_info
+	@CacheEvict(value = "inscriptions", key = "#edrID")
+	public void updateAgpInscription(List<Object> fields, String edrID) {
+		String sql = "UPDATE agp_inscription_info "
+				+ "SET caption=?, content_translation= ?, cil=?, langner=?, content_epidocified=?, height_from_ground=(?),graffito_height=(?), "
+				+ "graffito_length=?, letter_height_min=?, letter_height_max=?, individual_letter_heights=?, "
+				+ " comment=?, has_figural_component = ?,  is_greatest_hit_figural=?, is_greatest_hit_translation=?, is_themed=? "
+				+ "where edr_id=(?)";
+		fields.add(edrID);
+		update(sql, fields.toArray());
+	}
+
+	// update greatest hits info
+	public void updateGreatestHitsInfo(String edrID, String commentary, String preferredImage) {
+
+		String selectSQL = InsertFeaturedGraffiti.SELECT_GH_INFO;
+		String updateSQL = InsertFeaturedGraffiti.UPDATE_GH_INFO;
+		String insertSQL = InsertFeaturedGraffiti.INSERT_GH_INFO;
+
+		List<GreatestHitsInfo> inscriptions = query(selectSQL, new GreatestHItsInfoRowMapper(), edrID);
+
+		if (inscriptions.size() == 1) {
+			// entry already exists, so update it.
+			update(updateSQL, commentary, preferredImage, edrID);
+
+		} else {
+			// insert
+			update(insertSQL, edrID, commentary, preferredImage);
+		}
+	}
+
+	// update graffito2drawingtags
+	public void updateDrawingTags(List<String> fields) {
+		String sql = "UPDATE graffito2drawingtags " + "SET drawing_tag_id=(?) " + "where edr_id=(?)";
+		update(sql, fields.toArray());
+	}
+
+	public void updateThemes(List<String> fields) {
+		String sql = "UPDATE graffititothemes " + "SET theme_id=(?) " + "where graffito_id=(?)";
+		update(sql, fields.toArray());
+	}
+
+	// insert edr inscription
+	public void insertEdrInscription(List<ArrayList<String>> inscriptions) {
+		String sql = "INSERT INTO edr_inscriptions "
+				+ "(edr_id,ancient_city,find_spot, language, content,bibliography, writing_style, apparatus)"
+				+ " VALUES (?,?,?,?,?,?,?,?)";
+		for (ArrayList<String> fields : inscriptions) {
+			update(sql, fields.toArray());
+		}
+	}
+
+	// insert agp_inscription_info
+	public void insertAgpInscription(ArrayList<ArrayList<String>> inscriptions) {
+		String sql = "INSERT INTO agp_inscription_info "
+				+ "(edr_id,floor_to_graffito_height, content_translation, graffito_height, graffito_length, letter_height_min, letter_height_max, cil)"
+				+ " VALUES (?,?,?,?,?,?,?,?)";
 		for (ArrayList<String> fields : inscriptions) {
 			update(sql, fields.toArray());
 		}
 	}
 
 	public void clearDrawingTags(String edr) {
-		String sql = "DELETE FROM graffitotodrawingtags "
-				+ "WHERE graffito_id=(?)";
+		String sql = "DELETE FROM graffitotodrawingtags " + "WHERE graffito_id=(?)";
 
 		update(sql, edr);
 
 	}
 
+	public void clearThemes(String edr) {
+		String sql = "DELETE FROM graffititothemes " + "WHERE graffito_id=(?)";
+
+		update(sql, edr);
+
+	}
+
+	// insert drawing tags
 	public void insertDrawingTags(String edr, String[] dts) {
-		String sql = "INSERT INTO graffitotodrawingtags "
-				+ "(graffito_id,drawing_tag_id)" + " VALUES (?,?)";
+		String sql = "INSERT INTO graffitotodrawingtags " + "(graffito_id,drawing_tag_id)" + " VALUES (?,?)";
 		for (String dt : dts) {
 			update(sql, new Object[] { edr, Integer.parseInt(dt) });
 		}
 	}
 
-	public void insertUser(ArrayList<String> user) {
-		String sql = "INSERT INTO users " + "(username,password,name)"
-				+ " VALUES (?,?,?)";
-
-		update(sql, user.toArray());
-	}
-
-	public List<User> getPendingUsers() {
-		List<User> results = query(
-				"SELECT username FROM users WHERE enabled is NULL",
-				new UserRowMapper());
-		return results;
-	}
-
-	public void approveUsers(Object[] users) {
-		String sql = "UPDATE users " + "SET enabled='true'"
-				+ "where username=(?)";
-
-		for (int x = 0; x < users.length; x++) {
-			update(sql, users[x]);
+	public void insertThemes(String edr, String[] themes) {
+		String sql = "INSERT INTO graffititothemes " + "(graffito_id,theme_id)" + " VALUES (?,?)";
+		for (String theme : themes) {
+			update(sql, new Object[] { edr, Integer.parseInt(theme) });
 		}
 	}
 
-	private static final class UserRowMapper implements RowMapper<User> {
-		public User mapRow(final ResultSet resultSet, final int rowNum)
-				throws SQLException {
-			final User us = new User();
-			us.setUserName(resultSet.getString("username"));
-			return us;
+	public void updateDrawingInfo(String drawingDescriptionLatin, String drawingDescriptionEnglish, String edrId) {
+		String checkSQL = "SELECT count(edr_id) FROM figural_graffiti_info WHERE edr_id = ?";
+		Integer count = queryForObject(checkSQL, Integer.class, edrId);
+
+		if (count == 0) {
+			String isql = "INSERT INTO figural_graffiti_info (edr_id) values (?) ";
+			update(isql, edrId);
 		}
+
+		String sql = "UPDATE figural_graffiti_info SET  description_in_latin = ?, description_in_english = ? "
+				+ "WHERE edr_id = ?";
+		update(sql, new Object[] { drawingDescriptionLatin, drawingDescriptionEnglish, edrId });
+
 	}
 
 }
