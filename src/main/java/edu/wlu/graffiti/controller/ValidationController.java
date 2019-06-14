@@ -1,15 +1,14 @@
 package edu.wlu.graffiti.controller;
 
-import java.util.*;
+import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
 
 import edu.wlu.graffiti.bean.Inscription;
 import edu.wlu.graffiti.dao.GraffitiDao;
@@ -22,11 +21,12 @@ public class ValidationController {
 	private GraffitiDao graffitiDao;
 
 	// Display the form on the get request
+	/*
 	@RequestMapping(method = RequestMethod.GET)
-	public String showValidatinForm(Map model, final HttpServletRequest request) {
+	public String showValidationForm(Map model, final HttpServletRequest request) {
 		final String edr = request.getParameter("EDR");
-		final List<Inscription> inscriptions = this.graffitiDao
-				.getInscriptionsByEDR(edr);
+		final Inscription inscription = this.graffitiDao
+				.getInscriptionByEDR(edr);
 
 		
 		Map<String,String> country = new LinkedHashMap<String,String>();
@@ -35,9 +35,10 @@ public class ValidationController {
 		country.put("SG", "Singapore");
 		country.put("MY", "Malaysia");
 		
-		request.setAttribute("inscriptions", inscriptions);
+		request.setAttribute("inscriptions", inscription);
 		return "updateTest";
 	}
+	*/
 
 	// Process the form.
 	@RequestMapping(method = RequestMethod.POST)
